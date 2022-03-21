@@ -6,33 +6,20 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("home"),
-        ),
-        drawer: Drawer(
+        home: Center(
             child: ListView(
-          children: [
-            DrawerHeader(child: Text("drawer")),
-            ListTile(
-                onTap: () {
-                  Navigator.pushNamed(context, '/donor');
-                },
-                title: Text("donor")),
-            ListTile(
-                onTap: () {
-                  Navigator.pushNamed(context, '/food-bank');
-                },
-                title: Text("foodbank")),
-            ListTile(
-                onTap: () {
-                  Navigator.pushNamed(context, '/');
-                },
-                title: Text("home")),
-          ],
-        )),
-      ),
-    );
-    ;
+      children: [
+        ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/donor');
+            },
+            child: Text("donor")),
+        ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/food-bank');
+            },
+            child: Text("foodbank"))
+      ],
+    )));
   }
 }
