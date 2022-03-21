@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/',
+      initialRoute: '/donor',
       routes: {
         '/': (context) => Home(),
         '/donor': (context) => Donor(),
