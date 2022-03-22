@@ -126,10 +126,40 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Expanded(child: Text(widget.data["foodbank"]["name"])),
-      Expanded(child: Text(widget.data["address"])),
-      Expanded(child: Text(widget.data["phone"])),
-    ]);
+    final needsString = widget.data["needs"]["needs"].toString();
+    final needsList = needsString.split("\r\n");
+    print(needsList);
+    return Scaffold(
+        appBar: AppBar(title: Text(widget.data["foodbank"]["name"])),
+        body: Column(children: [
+          Expanded(flex: 2, child: Text("Google streetview")),
+          Expanded(
+              flex: 2,
+              child: ListView(
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.location_pin),
+                    title: Text(widget.data["address"]),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.phone),
+                    title: Text(widget.data["phone"]),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.email),
+                    title: Text(widget.data["email"]),
+                  ),
+                ],
+              )),
+          Expanded(child: Text("Urgent appeals")),
+          Expanded(
+            child: ListView.builder(
+                itemCount: needsList.length,
+                itemBuilder: (context, i) {
+                  final need = needsList[i];
+                  return Text(need);
+                }),
+          )
+        ]));
   }
 }
