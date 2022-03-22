@@ -7,7 +7,7 @@ class Donor extends StatefulWidget {
   const Donor({Key? key}) : super(key: key);
 
   static final LatLng _kMapCenter =
-      LatLng(53.426136370592815, -2.242767427254577);
+      LatLng(53.80754277823678, -1.5484416213022532);
 
   static final CameraPosition _kInitialPosition =
       CameraPosition(target: _kMapCenter, zoom: 11.0, tilt: 0, bearing: 0);
@@ -34,12 +34,12 @@ class _DonorState extends State<Donor> {
         assert(lat is double);
         final lng = double.parse((splitted[1]));
         assert(lng is double);
-        print(lat);
-        print(lng);
         final marker = Marker(
-          markerId: MarkerId(foodbank["foodbank"]["name"]),
-          position: LatLng(lat, lng),
-        );
+            markerId: MarkerId(foodbank["foodbank"]["name"]),
+            position: LatLng(lat, lng),
+            infoWindow: InfoWindow(
+                title: foodbank["foodbank"]["name"],
+                snippet: foodbank["address"]));
         _markers[foodbank["foodbank"]["name"]] = marker;
       }
     });
@@ -90,6 +90,13 @@ class _DonorState extends State<Donor> {
                   itemBuilder: (context, i) {
                     final foodBank = foodBankList[i];
                     return ListTile(
+                      onTap: (() => {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetailedFoodBank(data: foodBank)),
+                            )
+                          }),
                       leading: Icon(Icons.fastfood),
                       title: Text(foodBank["foodbank"]["name"]),
                       trailing: Text(
@@ -100,5 +107,29 @@ class _DonorState extends State<Donor> {
                 ))
               ],
             )));
+  }
+}
+
+class DetailedFoodBank extends StatefulWidget {
+  final Map data;
+  const DetailedFoodBank({Key? key, required this.data}) : super(key: key);
+
+  @override
+  State<DetailedFoodBank> createState() => _DetailedFoodBankState();
+}
+
+class _DetailedFoodBankState extends State<DetailedFoodBank> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Expanded(child: Text(widget.data["foodbank"]["name"])),
+      Expanded(child: Text(widget.data["address"])),
+      Expanded(child: Text(widget.data["phone"])),
+    ]);
   }
 }
