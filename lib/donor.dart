@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Donor extends StatelessWidget {
   const Donor({Key? key}) : super(key: key);
+
+  static final LatLng _kMapCenter =
+      LatLng(53.426136370592815, -2.242767427254577);
+
+  static final CameraPosition _kInitialPosition =
+      CameraPosition(target: _kMapCenter, zoom: 11.0, tilt: 0, bearing: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +17,11 @@ class Donor extends StatelessWidget {
             appBar: AppBar(title: Text("donor")),
             body: Column(
               children: [
-                Expanded(child: Text("hello?")),
+                Expanded(
+                    child: GoogleMap(
+                  initialCameraPosition: _kInitialPosition,
+                  mapType: MapType.hybrid,
+                )),
                 SafeArea(
                   child: DropdownButton<String>(
                     value: "One",
