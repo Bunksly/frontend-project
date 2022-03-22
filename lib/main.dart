@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/home.dart';
 import 'package:frontend/donor.dart';
-import 'package:frontend/foodbank.dart';
+import 'package:frontend/FoodBankMain.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/donor',
+      initialRoute: '/',
       routes: {
         '/': (context) => Home(),
         '/donor': (context) => Donor(),
