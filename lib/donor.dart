@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
@@ -18,6 +17,7 @@ class Donor extends StatefulWidget {
 }
 
 class _DonorState extends State<Donor> {
+  final Map<String, Marker> _markers = {};
   var foodBankList = [];
   var url =
       "https://www.givefood.org.uk/api/2/locations/search/?address=West%20One,%20100%20Wellington%20St,%20Leeds%20LS1%204LT";
@@ -27,6 +27,21 @@ class _DonorState extends State<Donor> {
     final data = jsonDecode(rawData.body) as List;
     setState(() {
       foodBankList = data;
+      _markers.clear();
+      for (final foodbank in data) {
+        final splitted = foodbank["lat_lng"].split(',');
+        final lat = double.parse((splitted[0]));
+        assert(lat is double);
+        final lng = double.parse((splitted[1]));
+        assert(lng is double);
+        print(lat);
+        print(lng);
+        final marker = Marker(
+          markerId: MarkerId(foodbank["foodbank"]["name"]),
+          position: LatLng(lat, lng),
+        );
+        _markers[foodbank["foodbank"]["name"]] = marker;
+      }
     });
   }
 
@@ -47,7 +62,7 @@ class _DonorState extends State<Donor> {
                     child: GoogleMap(
                   initialCameraPosition: Donor._kInitialPosition,
                   mapType: MapType.hybrid,
-                  markers: ,
+                  markers: _markers.values.toSet(),
                 )),
                 SafeArea(
                   child: DropdownButton<String>(
