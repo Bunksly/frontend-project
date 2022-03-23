@@ -1,28 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:frontend/widget/button_widget.dart';
 
 class RequestPage extends StatelessWidget {
-   static final String title = "example";
+  static final String title = "request page";
   //const RequestPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-        title: title,
-        theme: ThemeData(primaryColor: Colors.red),
-        home: MainPage(title: title),
+    return Scaffold(
+  appBar:AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: Text(title),
+        ),
+        body: MainPage(),
     );
-      
   }
 }
-class MainPage extends StatefulWidget {
-  final String title;
 
-const MainPage({
+class MainPage extends StatefulWidget {
+
+
+  const MainPage({
     Key? key,
-    required this.title,
+   
   });
 
   @override
@@ -31,36 +34,33 @@ const MainPage({
 
 class _MainPageState extends State<MainPage> {
   final formKey = GlobalKey<FormState>();
-  String? username = '';
-  String? email = '';
-  String? password = '';
+  String? itemName = '';
+  String? amount = '';
+  bool? isUrgent = false;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Form(
+  Widget build(BuildContext context) =>
+        Form(
           key: formKey,
           //autovalidateMode: AutovalidateMode.onUserInteraction,
           child: ListView(
             padding: EdgeInsets.all(16),
             children: [
-              buildUsername(),
+              buildItemName(),
               const SizedBox(height: 16),
-              buildEmail(),
+              buildAmount(),
               const SizedBox(height: 32),
-              buildPassword(),
+              buildIsUrgent(),
               const SizedBox(height: 32),
               buildSubmit(),
             ],
           ),
-        ),
+        
       );
 
-  Widget buildUsername() => TextFormField(
+  Widget buildItemName() => TextFormField(
         decoration: InputDecoration(
-          labelText: 'Username',
+          labelText: 'item name',
           border: OutlineInputBorder(),
           // errorBorder:
           //     OutlineInputBorder(borderSide: BorderSide(color: Colors.purple)),
@@ -69,7 +69,7 @@ class _MainPageState extends State<MainPage> {
           // errorStyle: TextStyle(color: Colors.purple),
         ),
         validator: (value) {
-         if (value == null) {
+          if (value == null) {
             return 'Enter at least 4 characters';
           } else if (value.length < 4) {
             return 'Enter at least 4 characters';
@@ -78,47 +78,57 @@ class _MainPageState extends State<MainPage> {
           }
         },
         maxLength: 30,
-        onSaved: (value) => setState(() => username = value!),
+        onSaved: (value) => setState(() => itemName = value!),
       );
 
-  Widget buildEmail() => TextFormField(
+  Widget buildAmount() => TextFormField(
         decoration: InputDecoration(
-          labelText: 'Email',
+          labelText: 'Amount',
           border: OutlineInputBorder(),
         ),
         validator: (value) {
-       final pattern = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)';
+          final pattern = r'(^[0-9]*$)';
           final regExp = RegExp(pattern);
           if (value == null) {
-            return 'Enter an email';
+            return 'Enter an amount';
           } else if (!regExp.hasMatch(value)) {
-            return 'Enter a valid email';
+            return 'Enter a valid amount';
           } else {
             return null;
           }
         },
-        keyboardType: TextInputType.emailAddress,
-        onSaved: (value) => setState(() => email = value),
+        maxLength: 3,
+        // keyboardType: TextInputType.emailAddress,
+        onSaved: (value) => setState(() => amount = value),
       );
 
-  Widget buildPassword() => TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Password',
-          border: OutlineInputBorder(),
-        ),
-        validator: (value) {
-         if (value == null) {
-            return 'enter a password';
-          } else if (value.length < 7) {
-            return 'Password must be at least 7 characters long';
-          } else {
-            return null;
-          }
-        },
-        onSaved: (value) => setState(() => password = value),
-        keyboardType: TextInputType.visiblePassword,
-        obscureText: true,
-      );
+  Widget buildIsUrgent() => CheckboxListTile(
+      value: isUrgent,
+      title: Text("Urgent?"),
+      onChanged: (bool? newValue) {
+        setState(() {
+          isUrgent = newValue;
+        });
+      });
+
+  // Widget buildIsUrgent() => TextFormField(
+  //       decoration: InputDecoration(
+  //         labelText: 'Urgent?',
+  //         border: OutlineInputBorder(),
+  //       ),
+  //       validator: (value) {
+  //        if (value == null) {
+  //           return 'enter a password';
+  //         } else if (value.length < 7) {
+  //           return 'Password must be at least 7 characters long';
+  //         } else {
+  //           return null;
+  //         }
+  //       },
+  //       onSaved: (value) => setState(() => password = value),
+  //       keyboardType: TextInputType.visiblePassword,
+  //       obscureText: true,
+  //     );
 
   Widget buildSubmit() => Builder(
         builder: (context) => ButtonWidget(
@@ -131,7 +141,7 @@ class _MainPageState extends State<MainPage> {
               formKey.currentState!.save();
 
               final message =
-                  'Username: $username\nPassword: $password\nEmail: $email';
+                  'Username: $itemName\nPassword: $isUrgent\nEmail: $amount';
               final snackBar = SnackBar(
                 content: Text(
                   message,
@@ -145,4 +155,3 @@ class _MainPageState extends State<MainPage> {
         ),
       );
 }
-

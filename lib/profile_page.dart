@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
    onClicked: () {// function to link to the next page
           Navigator.push(
             context, 
-            MaterialPageRoute(builder: ((context) =>  RequestPage()),
+            MaterialPageRoute(builder: (context) =>  RequestPage(),
            ) );
           
    }, // function to link to the next page
