@@ -11,6 +11,11 @@ class Home extends StatelessWidget {
       children: [
         ElevatedButton(
             onPressed: () {
+              Navigator.pushNamed(context, '/login');
+            },
+            child: Text("Login")),
+        ElevatedButton(
+            onPressed: () {
               Navigator.pushNamed(context, '/donor');
             },
             child: Text("donor")),
@@ -23,4 +28,3 @@ class Home extends StatelessWidget {
     )));
   }
 }
-

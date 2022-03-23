@@ -39,6 +39,7 @@ dependencies:
   json_annotation: ^4.4.0
   json_serializable: ^6.1.5
   flutter_google_street_view: ^2.2.6
+  flutter_login: ^3.2.0
 
 dev_dependencies:
   flutter_test:
