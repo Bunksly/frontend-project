@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/widget/button_widget.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 class RequestPage extends StatelessWidget {
   static final String title = "request page";
-  //const RequestPage({Key? key}) : super(key: key);
+  final List<Map> list;
+  final Function statefn;
+  const RequestPage({Key? key, required this.list, required this.statefn})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-  appBar:AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: Text(title),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        body: MainPage(),
+        title: Text(title),
+      ),
+      body: MainPage(list: list, statefn: statefn),
     );
   }
 }
 
 class MainPage extends StatefulWidget {
-
-
-  const MainPage({
-    Key? key,
-   
-  });
+  final List<Map> list;
+  final Function statefn;
+  const MainPage({Key? key, required this.list, required this.statefn});
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -34,56 +35,128 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final formKey = GlobalKey<FormState>();
+
+  String dropdownValue = 'food';
+
+  final categoryList = ["food", "clothes", "toiletries"];
+
+  final Map itemMap = {
+    "food": ["pasta", "bread", "bananas"],
+    "clothes": ["trousers", "shirts", "shoes"],
+    "toiletries": ["soap", "toothpaste", "toilet paper"]
+  };
+
   String? itemName = '';
-  String? amount = '';
+  int? quantityRequired = 0;
+  String? categoryName = '';
   bool? isUrgent = false;
 
+  Icon urgentIcon(input) {
+    if (input) {
+      return Icon(Icons.check);
+    } else {
+      return Icon(Icons.close);
+    }
+  }
+
   @override
-  Widget build(BuildContext context) =>
-        Form(
-          key: formKey,
-          //autovalidateMode: AutovalidateMode.onUserInteraction,
-          child: ListView(
-            padding: EdgeInsets.all(16),
-            children: [
-              buildItemName(),
-              const SizedBox(height: 16),
-              buildAmount(),
-              const SizedBox(height: 32),
-              buildIsUrgent(),
-              const SizedBox(height: 32),
-              buildSubmit(),
-            ],
-          ),
-        
-      );
+  void initState() {
+    super.initState();
+    categoryName = "food";
+  }
 
-  Widget buildItemName() => TextFormField(
-        decoration: InputDecoration(
-          labelText: 'item name',
-          border: OutlineInputBorder(),
-          // errorBorder:
-          //     OutlineInputBorder(borderSide: BorderSide(color: Colors.purple)),
-          // focusedErrorBorder:
-          //     OutlineInputBorder(borderSide: BorderSide(color: Colors.purple)),
-          // errorStyle: TextStyle(color: Colors.purple),
-        ),
-        validator: (value) {
-          if (value == null) {
-            return 'Enter at least 4 characters';
-          } else if (value.length < 4) {
-            return 'Enter at least 4 characters';
-          } else {
-            return null;
-          }
-        },
-        maxLength: 30,
-        onSaved: (value) => setState(() => itemName = value!),
-      );
+  @override
+  Widget build(BuildContext context) => Column(children: [
+        Expanded(
+            flex: 2,
+            child: Form(
+              key: formKey,
+              //autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                children: [
+                  buildCategory(),
+                  const SizedBox(height: 16),
+                  buildItemName(),
+                  const SizedBox(height: 16),
+                  buildQuantityRequired(),
+                  const SizedBox(height: 32),
+                  buildIsUrgent(),
+                  const SizedBox(height: 32),
+                  buildSubmit(),
+                ],
+              ),
+            )),
+        Expanded(
+          child: ListView.builder(
+              itemCount: widget.list.length,
+              itemBuilder: (context, i) {
+                return ListTile(
+                  leading: RichText(
+                      text: TextSpan(children: [
+                    TextSpan(text: "Urgent? "),
+                    WidgetSpan(child: urgentIcon(widget.list[i]["isUrgent"]))
+                  ])),
+                  title: Text(widget.list[i]["itemName"]),
+                  subtitle: Text("Category: " + widget.list[i]["categoryName"]),
+                  trailing: Text(widget.list[i]["quantityRequired"].toString()),
+                );
+              }),
+        )
+      ]);
 
-  Widget buildAmount() => TextFormField(
+  Widget buildCategory() => DropdownButton(
+      value: dropdownValue,
+      items: categoryList.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        setState(() {
+          dropdownValue = newValue!;
+          categoryName = newValue;
+        });
+      });
+
+  Widget buildItemName() => DropdownSearch<String>(
+      mode: Mode.MENU,
+      items: itemMap[categoryName],
+      label: "Select Item",
+      showSearchBox: true,
+      popupItemDisabled: (String s) => s.startsWith('I'),
+      onChanged: (String? newValue) {
+        setState(() {
+          itemName = newValue;
+        });
+      });
+
+  // Widget buildItemName() => TextFormField(
+  //       decoration: InputDecoration(
+  //         labelText: 'item name',
+  //         border: OutlineInputBorder(),
+  //         // errorBorder:
+  //         //     OutlineInputBorder(borderSide: BorderSide(color: Colors.purple)),
+  //         // focusedErrorBorder:
+  //         //     OutlineInputBorder(borderSide: BorderSide(color: Colors.purple)),
+  //         // errorStyle: TextStyle(color: Colors.purple),
+  //       ),
+  //       validator: (value) {
+  //         if (value == null) {
+  //           return 'Enter an item name';
+  //         } else if (value.length < 4) {
+  //           return 'Enter at least 4 characters';
+  //         } else {
+  //           return null;
+  //         }
+  //       },
+  //       maxLength: 30,
+  //       onSaved: (value) => setState(() => itemName = value!),
+  //     );
+
+  Widget buildQuantityRequired() => TextFormField(
         decoration: InputDecoration(
-          labelText: 'Amount',
+          labelText: 'Quantity required',
           border: OutlineInputBorder(),
         ),
         validator: (value) {
@@ -99,7 +172,8 @@ class _MainPageState extends State<MainPage> {
         },
         maxLength: 3,
         // keyboardType: TextInputType.emailAddress,
-        onSaved: (value) => setState(() => amount = value),
+        onSaved: (value) =>
+            setState(() => quantityRequired = int.parse(value.toString())),
       );
 
   Widget buildIsUrgent() => CheckboxListTile(
@@ -140,16 +214,43 @@ class _MainPageState extends State<MainPage> {
             if (isValid) {
               formKey.currentState!.save();
 
-              final message =
-                  'Username: $itemName\nPassword: $isUrgent\nEmail: $amount';
-              final snackBar = SnackBar(
-                content: Text(
-                  message,
-                  style: TextStyle(fontSize: 20),
-                ),
-                backgroundColor: Colors.green,
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              Map output = {
+                "itemName": itemName,
+                "quantityRequired": quantityRequired,
+                "categoryName": categoryName,
+                "isUrgent": isUrgent
+              };
+
+              void duplicateAdder() {
+                bool didAdd = false;
+                for (final x in widget.list) {
+                  String outputItemName = output["itemName"];
+                  String xItemName = x["itemName"];
+                  if (xItemName == outputItemName) {
+                    x["quantityRequired"] += output["quantityRequired"];
+                    didAdd = true;
+                    break;
+                  }
+                }
+                if (didAdd == false) {
+                  widget.list.add(output);
+                }
+              }
+
+              duplicateAdder();
+
+              widget.statefn(widget.list);
+
+              // final message =
+              //     'Username: $itemName\nPassword: $isUrgent\nEmail: $quantityRequired\nCategory: $categoryName';
+              // final snackBar = SnackBar(
+              //   content: Text(
+              //     message,
+              //     style: TextStyle(fontSize: 20),
+              //   ),
+              //   backgroundColor: Colors.green,
+              // );
+              // ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }
           },
         ),

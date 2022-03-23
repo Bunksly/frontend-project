@@ -14,11 +14,28 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final List<Map> needList = [{
-"itemName": "pasta",
-"Amount":50,
-"isUrgent": true
-}];
+  List<Map> needList = [
+    {
+      "itemName": "pasta",
+      "quantityRequired": 50,
+      "categoryName": "food",
+      "isUrgent": true
+    }
+  ];
+
+  Icon urgentIcon(input) {
+    if (input) {
+      return Icon(Icons.check);
+    } else {
+      return Icon(Icons.close);
+    }
+  }
+
+  void setParentState(input) {
+    setState(() {
+      needList = input;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,27 +44,38 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
         appBar: buildAppBar(context),
         body: Column(children: [
-          Expanded(flex:2, child: ListView(
-            physics: BouncingScrollPhysics(),
-            children: [
-              ProfileWidget(
-                imagePath: foodbank.imagePath,
-                onClicked: () async {},
-              ),
-              const SizedBox(height: 50),
-              buildName(foodbank),
-              Center(child: buildItemsButton()),
-            ],
+          Expanded(
+            flex: 2,
+            child: ListView(
+              physics: BouncingScrollPhysics(),
+              children: [
+                ProfileWidget(
+                  imagePath: foodbank.imagePath,
+                  onClicked: () async {},
+                ),
+                const SizedBox(height: 50),
+                buildName(foodbank),
+                Center(child: buildItemsButton()),
+              ],
+            ),
           ),
-          ),
-          Expanded(child: ListView.builder(
-            itemCount: needList.length,
-            itemBuilder: (context, i) {
-              return ListTile(
-                title: Text(needList[i]["itemName"]),
-
-              );
-            }))
+          Expanded(
+              child: ListView.builder(
+                  itemCount: needList.length,
+                  itemBuilder: (context, i) {
+                    return ListTile(
+                      leading: RichText(
+                          text: TextSpan(children: [
+                        TextSpan(text: "Urgent? "),
+                        WidgetSpan(child: urgentIcon(needList[i]["isUrgent"]))
+                      ])),
+                      title: Text(needList[i]["itemName"]),
+                      subtitle:
+                          Text("Category: " + needList[i]["categoryName"]),
+                      trailing:
+                          Text(needList[i]["quantityRequired"].toString()),
+                    );
+                  }))
         ]));
   }
 
@@ -72,7 +100,8 @@ class _ProfilePageState extends State<ProfilePage> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => RequestPage(),
+                builder: (context) =>
+                    RequestPage(list: needList, statefn: setParentState),
               ));
         }, // function to link to the next page
       );
