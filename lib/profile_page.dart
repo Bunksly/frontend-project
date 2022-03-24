@@ -66,16 +66,19 @@ class _ProfilePageState extends State<ProfilePage> {
                     return ListTile(
                       leading: RichText(
                           text: TextSpan(children: [
-                        TextSpan(text: "Urgent? "),
+                        TextSpan(text: "Urgent?\n "),
                         WidgetSpan(child: urgentIcon(needList[i]["isUrgent"]))
                       ])),
-                      title: Text(needList[i]["itemName"]),
+                      title: Text(needList[i]["itemName"] + ": "+needList[i]["quantityRequired"].toString()+" needed"),
                       subtitle:
                           Text("Category: " + needList[i]["categoryName"]),
-                      trailing:
-                          Text(needList[i]["quantityRequired"].toString()),
+                    //  trailing:
+                               
+                       
+                         
                     );
-                  }))
+                  })
+                  )
         ]));
   }
 

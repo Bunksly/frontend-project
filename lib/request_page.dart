@@ -85,21 +85,24 @@ class _MainPageState extends State<MainPage> {
                   buildSubmit(),
                 ],
               ),
-            )),
+            )
+            ),
         Expanded(
           child: ListView.builder(
+          
+           
               itemCount: widget.list.length,
-              itemBuilder: (context, i) {
-                return ListTile(
+              itemBuilder: (context, i) { 
+               return ListTile(
                   leading: RichText(
                       text: TextSpan(children: [
                     TextSpan(text: "Urgent? "),
                     WidgetSpan(child: urgentIcon(widget.list[i]["isUrgent"]))
                   ])
                   ),
-                  title: Text(widget.list[i]["itemName"]),
+                  title: Text(widget.list[i]["itemName"] + ": "+widget.list[i]["quantityRequired"].toString()+" needed"),
                   subtitle: Text("Category: " + widget.list[i]["categoryName"]),
-                  trailing: Text(widget.list[i]["quantityRequired"].toString()),
+                  trailing: ElevatedButton(child: Text("delete") ,onPressed: (){}),
                 );
               }),
         )
