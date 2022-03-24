@@ -42,6 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final foodbank = FoodbankData.myFoodbank;
 
     return Scaffold(
+        backgroundColor: Color(0x25ECE0E0),
         appBar: buildAppBar(context),
         body: Padding(
             padding: EdgeInsets.all(15),
