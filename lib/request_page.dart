@@ -14,7 +14,7 @@ class RequestPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(title),
@@ -53,9 +53,9 @@ class _MainPageState extends State<MainPage> {
 
   Icon urgentIcon(input) {
     if (input) {
-      return Icon(Icons.check);
+      return const Icon(Icons.check);
     } else {
-      return Icon(Icons.close);
+      return const Icon(Icons.close);
     }
   }
 
@@ -66,7 +66,9 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(children: [
+  Widget build(BuildContext context) => Padding(
+      padding: EdgeInsets.all(15),
+      child: Column(children: [
         Expanded(
             flex: 2,
             child: Form(
@@ -85,42 +87,60 @@ class _MainPageState extends State<MainPage> {
                   buildSubmit(),
                 ],
               ),
-            )
-            ),
+            )),
+        Row(
+          children: const [
+            Expanded(
+                flex: 1,
+                child: Text("Urgent?",
+                    style: TextStyle(fontWeight: FontWeight.bold))),
+            Expanded(
+                flex: 4,
+                child: Text("Item Name(Amount needed)",
+                    style: TextStyle(fontWeight: FontWeight.bold))),
+            Expanded(child: Text(""))
+          ],
+        ),
         Expanded(
           child: ListView.builder(
-          
-           
               itemCount: widget.list.length,
-              itemBuilder: (context, i) { 
-               return ListTile(
-                  leading: RichText(
-                      text: TextSpan(children: [
-                    TextSpan(text: "Urgent? "),
-                    WidgetSpan(child: urgentIcon(widget.list[i]["isUrgent"]))
-                  ])
-                  ),
-                  title: Text(widget.list[i]["itemName"] + ": "+widget.list[i]["quantityRequired"].toString()+" needed"),
+              itemBuilder: (context, i) {
+                return ListTile(
+                  leading: urgentIcon(widget.list[i]["isUrgent"]),
+                  title: Text(widget.list[i]["itemName"] +
+                      "(${widget.list[i]["quantityRequired"].toString()})"),
                   subtitle: Text("Category: " + widget.list[i]["categoryName"]),
-                  trailing: ElevatedButton(child: Text("delete") ,onPressed: (){}),
+                  trailing: ElevatedButton(
+                      child: const Text("delete"),
+                      onPressed: () {
+                        setState(() {
+                          widget.list.removeWhere((e) =>
+                              e["itemName"] == widget.list[i]["itemName"] &&
+                              e["isUrgent"] == widget.list[i]["isUrgent"]);
+                          widget.statefn(widget.list);
+                        });
+                      }),
                 );
               }),
         )
-      ]);
+      ]));
 
-  Widget buildCategory() => DropdownButton(
-      value: dropdownValue,
-      items: categoryList.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
+  Widget buildCategory() => DropdownSearch<String>(
+      mode: Mode.MENU,
+      items: categoryList,
+      selectedItem: dropdownValue,
+      label: "Select Category",
+      showSearchBox: false,
+      popupItemDisabled: (String s) => s.startsWith('I'),
+      validator: (value) {
+        if (value == null) return "Select Category";
+        return null;
+      },
       onChanged: (String? newValue) {
         setState(() {
           dropdownValue = newValue!;
           categoryName = newValue;
-           itemName = null;
+          itemName = null;
         });
       });
 
@@ -141,41 +161,16 @@ class _MainPageState extends State<MainPage> {
         });
       });
 
-  // Widget buildItemName() => TextFormField(
-  //       decoration: InputDecoration(
-  //         labelText: 'item name',
-  //         border: OutlineInputBorder(),
-  //         // errorBorder:
-  //         //     OutlineInputBorder(borderSide: BorderSide(color: Colors.purple)),
-  //         // focusedErrorBorder:
-  //         //     OutlineInputBorder(borderSide: BorderSide(color: Colors.purple)),
-  //         // errorStyle: TextStyle(color: Colors.purple),
-  //       ),
-  //       validator: (value) {
-  //         if (value == null) {
-  //           return 'Enter an item name';
-  //         } else if (value.length < 4) {
-  //           return 'Enter at least 4 characters';
-  //         } else {
-  //           return null;
-  //         }
-  //       },
-  //       maxLength: 30,
-  //       onSaved: (value) => setState(() => itemName = value!),
-  //     );
-
   Widget buildQuantityRequired() => TextFormField(
-
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           labelText: 'Quantity required',
           border: OutlineInputBorder(),
         ),
         validator: (String? value) {
-         
-          final pattern = r'(^[0-9]*$)';
+          const pattern = r'(^[0-9]*$)';
           final regExp = RegExp(pattern);
           if (value == null) return 'Enter an amount';
-          if (value.length== 0) {
+          if (value.length == 0) {
             print(value);
             return 'Enter an amount';
           } else if (!regExp.hasMatch(value)) {
@@ -198,25 +193,6 @@ class _MainPageState extends State<MainPage> {
           isUrgent = newValue;
         });
       });
-
-  // Widget buildIsUrgent() => TextFormField(
-  //       decoration: InputDecoration(
-  //         labelText: 'Urgent?',
-  //         border: OutlineInputBorder(),
-  //       ),
-  //       validator: (value) {
-  //        if (value == null) {
-  //           return 'enter a password';
-  //         } else if (value.length < 7) {
-  //           return 'Password must be at least 7 characters long';
-  //         } else {
-  //           return null;
-  //         }
-  //       },
-  //       onSaved: (value) => setState(() => password = value),
-  //       keyboardType: TextInputType.visiblePassword,
-  //       obscureText: true,
-  //     );
 
   Widget buildSubmit() => Builder(
         builder: (context) => ButtonWidget(
@@ -255,21 +231,8 @@ class _MainPageState extends State<MainPage> {
               duplicateAdder();
 
               widget.statefn(widget.list);
-
-
-              // final message =
-              //     'Username: $itemName\nPassword: $isUrgent\nEmail: $quantityRequired\nCategory: $categoryName';
-              // final snackBar = SnackBar(
-              //   content: Text(
-              //     message,
-              //     style: TextStyle(fontSize: 20),
-              //   ),
-              //   backgroundColor: Colors.green,
-              // );
-              // ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }
           },
         ),
       );
-
 }

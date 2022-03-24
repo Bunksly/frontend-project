@@ -43,43 +43,52 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
         appBar: buildAppBar(context),
-        body: Column(children: [
-          Expanded(
-            flex: 2,
-            child: ListView(
-              physics: BouncingScrollPhysics(),
-              children: [
-                ProfileWidget(
-                  imagePath: foodbank.imagePath,
-                  onClicked: () async {},
+        body: Padding(
+            padding: EdgeInsets.all(15),
+            child: Column(children: [
+              Expanded(
+                flex: 2,
+                child: ListView(
+                  physics: BouncingScrollPhysics(),
+                  children: [
+                    ProfileWidget(
+                      imagePath: foodbank.imagePath,
+                      onClicked: () async {},
+                    ),
+                    const SizedBox(height: 50),
+                    buildName(foodbank),
+                    Center(child: buildItemsButton()),
+                  ],
                 ),
-                const SizedBox(height: 50),
-                buildName(foodbank),
-                Center(child: buildItemsButton()),
-              ],
-            ),
-          ),
-          Expanded(
-              child: ListView.builder(
-                  itemCount: needList.length,
-                  itemBuilder: (context, i) {
-                    return ListTile(
-                      leading: RichText(
-                          text: TextSpan(children: [
-                        TextSpan(text: "Urgent?\n "),
-                        WidgetSpan(child: urgentIcon(needList[i]["isUrgent"]))
-                      ])),
-                      title: Text(needList[i]["itemName"] + ": "+needList[i]["quantityRequired"].toString()+" needed"),
-                      subtitle:
-                          Text("Category: " + needList[i]["categoryName"]),
-                    //  trailing:
-                               
-                       
-                         
-                    );
-                  })
-                  )
-        ]));
+              ),
+              Row(
+                children: const [
+                  Expanded(
+                      flex: 1,
+                      child: Text("Urgent?",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  Expanded(
+                      flex: 4,
+                      child: Text("Item Name(Amount needed)",
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                  Expanded(
+                      child: Text("category",
+                          style: TextStyle(fontWeight: FontWeight.bold)))
+                ],
+              ),
+              Expanded(
+                  child: ListView.builder(
+                      itemCount: needList.length,
+                      itemBuilder: (context, i) {
+                        return ListTile(
+                          leading: urgentIcon(needList[i]["isUrgent"]),
+                          title: Text(needList[i]["itemName"] +
+                              "(${needList[i]["quantityRequired"].toString()})"),
+                          trailing: Text(needList[i]["categoryName"]),
+                          //  trailing:
+                        );
+                      }))
+            ])));
   }
 
 // foodbank name address and button to next page
