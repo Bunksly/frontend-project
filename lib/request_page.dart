@@ -46,7 +46,7 @@ class _MainPageState extends State<MainPage> {
     "toiletries": ["soap", "toothpaste", "toilet paper"]
   };
 
-  String? itemName = '';
+  String? itemName = null;
   int? quantityRequired = 0;
   String? categoryName = '';
   bool? isUrgent = false;
@@ -95,7 +95,8 @@ class _MainPageState extends State<MainPage> {
                       text: TextSpan(children: [
                     TextSpan(text: "Urgent? "),
                     WidgetSpan(child: urgentIcon(widget.list[i]["isUrgent"]))
-                  ])),
+                  ])
+                  ),
                   title: Text(widget.list[i]["itemName"]),
                   subtitle: Text("Category: " + widget.list[i]["categoryName"]),
                   trailing: Text(widget.list[i]["quantityRequired"].toString()),
@@ -116,15 +117,21 @@ class _MainPageState extends State<MainPage> {
         setState(() {
           dropdownValue = newValue!;
           categoryName = newValue;
+           itemName = null;
         });
       });
 
   Widget buildItemName() => DropdownSearch<String>(
       mode: Mode.MENU,
       items: itemMap[categoryName],
+      selectedItem: itemName,
       label: "Select Item",
       showSearchBox: true,
       popupItemDisabled: (String s) => s.startsWith('I'),
+      validator: (value) {
+        if (value == null) return "Select Item";
+        return null;
+      },
       onChanged: (String? newValue) {
         setState(() {
           itemName = newValue;
@@ -155,14 +162,18 @@ class _MainPageState extends State<MainPage> {
   //     );
 
   Widget buildQuantityRequired() => TextFormField(
+
         decoration: InputDecoration(
           labelText: 'Quantity required',
           border: OutlineInputBorder(),
         ),
-        validator: (value) {
+        validator: (String? value) {
+         
           final pattern = r'(^[0-9]*$)';
           final regExp = RegExp(pattern);
-          if (value == null) {
+          if (value == null) return 'Enter an amount';
+          if (value.length== 0) {
+            print(value);
             return 'Enter an amount';
           } else if (!regExp.hasMatch(value)) {
             return 'Enter a valid amount';
@@ -226,7 +237,8 @@ class _MainPageState extends State<MainPage> {
                 for (final x in widget.list) {
                   String outputItemName = output["itemName"];
                   String xItemName = x["itemName"];
-                  if (xItemName == outputItemName) {
+                  if (xItemName == outputItemName &&
+                      x["isUrgent"] == output["isUrgent"]) {
                     x["quantityRequired"] += output["quantityRequired"];
                     didAdd = true;
                     break;
@@ -240,6 +252,7 @@ class _MainPageState extends State<MainPage> {
               duplicateAdder();
 
               widget.statefn(widget.list);
+
 
               // final message =
               //     'Username: $itemName\nPassword: $isUrgent\nEmail: $quantityRequired\nCategory: $categoryName';
@@ -255,4 +268,5 @@ class _MainPageState extends State<MainPage> {
           },
         ),
       );
+
 }
