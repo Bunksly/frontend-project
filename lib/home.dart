@@ -5,8 +5,8 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Center(
+    return Scaffold(
+        body: Center(
             child: ListView(
       children: [
         ElevatedButton(
@@ -23,4 +23,3 @@ class Home extends StatelessWidget {
     )));
   }
 }
-
