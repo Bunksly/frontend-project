@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/main.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 
@@ -21,6 +23,7 @@ class _DonorState extends State<Donor> {
   var foodBankList = [];
   var url =
       "https://www.givefood.org.uk/api/2/locations/search/?address=West%20One,%20100%20Wellington%20St,%20Leeds%20LS1%204LT";
+  bool isSearching = false;
 
   void fetchFoodBanks(url) async {
     final rawData = await get(Uri.parse(url));
@@ -45,6 +48,29 @@ class _DonorState extends State<Donor> {
     });
   }
 
+  Widget appBarSearch() {
+    if (isSearching) {
+      return TextFormField(
+        maxLines: 1,
+        minLines: 1,
+        decoration: const InputDecoration(
+          contentPadding: EdgeInsets.all(10),
+          isDense: true,
+          filled: true,
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+          ),
+          fillColor: Colors.white,
+        ),
+        onFieldSubmitted: (value) {
+          print(value);
+        },
+      );
+    } else {
+      return Text("Local Foodbanks");
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -53,60 +79,58 @@ class _DonorState extends State<Donor> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            appBar: AppBar(title: Text("donor")),
-            body: Column(
-              children: [
-                Expanded(
-                    child: GoogleMap(
-                  initialCameraPosition: Donor._kInitialPosition,
-                  mapType: MapType.hybrid,
-                  markers: _markers.values.toSet(),
-                )),
-                SafeArea(
-                  child: DropdownButton<String>(
-                    value: "One",
-                    icon: const Icon(Icons.arrow_downward),
-                    elevation: 16,
-                    style: const TextStyle(color: Colors.deepPurple),
-                    underline: Container(
-                      height: 2,
-                      color: Colors.deepPurpleAccent,
-                    ),
-                    onChanged: (String? newValue) => {print("changed")},
-                    items: <String>['One', 'Two', 'Free', 'Four']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ),
-                Expanded(
+    return Scaffold(
+        appBar: AppBar(
+          title: appBarSearch(),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    isSearching = !isSearching;
+                  });
+                },
+                icon: Icon(Icons.search))
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+                child: GoogleMap(
+              initialCameraPosition: Donor._kInitialPosition,
+              mapType: MapType.hybrid,
+              markers: _markers.values.toSet(),
+            )),
+            Padding(
+                padding: EdgeInsets.fromLTRB(15, 5, 15, 0),
+                child: Row(children: [
+                  Expanded(child: DropdownSearch()),
+                  Expanded(child: DropdownSearch()),
+                ])),
+            Expanded(
+                child: Padding(
+                    padding: EdgeInsets.all(15),
                     child: ListView.builder(
-                  itemCount: foodBankList.length,
-                  itemBuilder: (context, i) {
-                    final foodBank = foodBankList[i];
-                    return ListTile(
-                      onTap: (() => {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailedFoodBank(data: foodBank)),
-                            )
-                          }),
-                      leading: Icon(Icons.fastfood),
-                      title: Text(foodBank["foodbank"]["name"]),
-                      trailing: Text(
-                          foodBank["distance_m"].toString() + " metres away"),
-                      subtitle: Text(foodBank["address"]),
-                    );
-                  },
-                ))
-              ],
-            )));
+                      itemCount: foodBankList.length,
+                      itemBuilder: (context, i) {
+                        final foodBank = foodBankList[i];
+                        return ListTile(
+                          onTap: (() => {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailedFoodBank(data: foodBank)),
+                                )
+                              }),
+                          leading: Icon(Icons.fastfood),
+                          title: Text(foodBank["foodbank"]["name"]),
+                          trailing: Text(foodBank["distance_m"].toString() +
+                              " metres away"),
+                          subtitle: Text(foodBank["address"]),
+                        );
+                      },
+                    )))
+          ],
+        ));
   }
 }
 
@@ -128,7 +152,6 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
   Widget build(BuildContext context) {
     final needsString = widget.data["needs"]["needs"].toString();
     final needsList = needsString.split("\r\n");
-    print(needsList);
     return Scaffold(
         appBar: AppBar(title: Text(widget.data["foodbank"]["name"])),
         body: Column(children: [

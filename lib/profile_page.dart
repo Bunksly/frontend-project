@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/foodbank.dart';
 import 'package:frontend/request_page.dart';
-import 'package:frontend/widget/appbar_widget.dart';
-import 'package:frontend/foodbank_data.dart';
-import 'package:frontend/widget/profile_widgets.dart';
-import 'package:frontend/widget/button_widget.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+class FoodBankPage extends StatefulWidget {
+  const FoodBankPage({Key? key}) : super(key: key);
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<FoodBankPage> createState() => _FoodBankPageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _FoodBankPageState extends State<FoodBankPage> {
   List<Map> needList = [
     {
       "itemName": "pasta",
@@ -22,6 +17,16 @@ class _ProfilePageState extends State<ProfilePage> {
       "isUrgent": true
     }
   ];
+
+  final Map charity = {
+    "charity_id": 1,
+    "charity_name": "Charity 1d",
+    "charity_image":
+        "https://leedsnorthandwest.foodbank.org.uk/wp-content/uploads/sites/124/2016/04/Leeds-North-and-West-Three-Colour-logo.png",
+    "address": "1 charity road,\n location1,\n A666AA",
+    "charity_website": "testcharitywebsite1d",
+    "email_address": "testEmail1d"
+  };
 
   Icon urgentIcon(input) {
     if (input) {
@@ -39,28 +44,40 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final foodbank = FoodbankData.myFoodbank;
-
     return Scaffold(
-        backgroundColor: Color(0x25ECE0E0),
-        appBar: buildAppBar(context),
+        appBar: AppBar(title: Text(charity["charity_name"])),
         body: Padding(
             padding: EdgeInsets.all(15),
             child: Column(children: [
               Expanded(
-                flex: 2,
-                child: ListView(
-                  physics: BouncingScrollPhysics(),
-                  children: [
-                    ProfileWidget(
-                      imagePath: foodbank.imagePath,
-                      onClicked: () async {},
-                    ),
-                    const SizedBox(height: 50),
-                    buildName(foodbank),
-                    Center(child: buildItemsButton()),
-                  ],
-                ),
+                flex: 6,
+                child: Column(children: [
+                  Image.network(
+                    charity["charity_image"],
+                    height: 100,
+                  ),
+                  ListTile(
+                      leading: Icon(Icons.account_circle),
+                      title: Text(charity["charity_name"])),
+                  ListTile(
+                      leading: Icon(Icons.location_city),
+                      title: Text(charity["address"])),
+                  ListTile(
+                      leading: Icon(Icons.email),
+                      title: Text(charity["email_address"])),
+                  ListTile(
+                      leading: Icon(Icons.web_rounded),
+                      title: Text(charity["charity_website"])),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RequestPage(
+                                    list: needList, statefn: setParentState)));
+                      },
+                      child: Text("Request Items")),
+                ]),
               ),
               Row(
                 children: const [
@@ -78,6 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               Expanded(
+                  flex: 3,
                   child: ListView.builder(
                       itemCount: needList.length,
                       itemBuilder: (context, i) {
@@ -91,31 +109,4 @@ class _ProfilePageState extends State<ProfilePage> {
                       }))
             ])));
   }
-
-// foodbank name address and button to next page
-  Widget buildName(Foodbank foodbank) => Column(
-        children: [
-          Text(foodbank.name,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-          const SizedBox(height: 50),
-          Text(
-            foodbank.address,
-            style: TextStyle(color: Colors.grey),
-          )
-        ],
-      );
-
-//button to the required items page
-  Widget buildItemsButton() => ButtonWidget(
-        text: "Request Items",
-        onClicked: () {
-          // function to link to the next page
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    RequestPage(list: needList, statefn: setParentState),
-              ));
-        }, // function to link to the next page
-      );
 }

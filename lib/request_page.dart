@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widget/button_widget.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 
 class RequestPage extends StatelessWidget {
-  static final String title = "request page";
+  static final String title = "Item Request Page";
   final List<Map> list;
   final Function statefn;
   const RequestPage({Key? key, required this.list, required this.statefn})
@@ -70,7 +69,7 @@ class _MainPageState extends State<MainPage> {
       padding: EdgeInsets.all(15),
       child: Column(children: [
         Expanded(
-            flex: 2,
+            flex: 3,
             child: Form(
               key: formKey,
               //autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -81,9 +80,9 @@ class _MainPageState extends State<MainPage> {
                   buildItemName(),
                   const SizedBox(height: 16),
                   buildQuantityRequired(),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
                   buildIsUrgent(),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
                   buildSubmit(),
                 ],
               ),
@@ -91,36 +90,45 @@ class _MainPageState extends State<MainPage> {
         Row(
           children: const [
             Expanded(
-                flex: 1,
+                flex: 3,
                 child: Text("Urgent?",
                     style: TextStyle(fontWeight: FontWeight.bold))),
             Expanded(
-                flex: 4,
+                flex: 12,
                 child: Text("Item Name(Amount needed)",
                     style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(child: Text(""))
+            Expanded(
+                flex: 3,
+                child: Text("Delete",
+                    style: TextStyle(fontWeight: FontWeight.bold)))
           ],
         ),
         Expanded(
+          flex: 2,
           child: ListView.builder(
               itemCount: widget.list.length,
               itemBuilder: (context, i) {
                 return ListTile(
-                  leading: urgentIcon(widget.list[i]["isUrgent"]),
-                  title: Text(widget.list[i]["itemName"] +
-                      "(${widget.list[i]["quantityRequired"].toString()})"),
-                  subtitle: Text("Category: " + widget.list[i]["categoryName"]),
-                  trailing: ElevatedButton(
-                      child: const Text("delete"),
-                      onPressed: () {
-                        setState(() {
-                          widget.list.removeWhere((e) =>
-                              e["itemName"] == widget.list[i]["itemName"] &&
-                              e["isUrgent"] == widget.list[i]["isUrgent"]);
-                          widget.statefn(widget.list);
-                        });
-                      }),
-                );
+                    leading: urgentIcon(widget.list[i]["isUrgent"]),
+                    title: Text(widget.list[i]["itemName"] +
+                        "(${widget.list[i]["quantityRequired"].toString()})"),
+                    subtitle:
+                        Text("Category: " + widget.list[i]["categoryName"]),
+                    trailing: SizedBox(
+                      height: 25,
+                      child: FloatingActionButton.small(
+                          heroTag: DateTime.now().toString(),
+                          child: const Icon(Icons.clear),
+                          backgroundColor: Colors.red,
+                          onPressed: () {
+                            setState(() {
+                              widget.list.removeWhere((e) =>
+                                  e["itemName"] == widget.list[i]["itemName"] &&
+                                  e["isUrgent"] == widget.list[i]["isUrgent"]);
+                              widget.statefn(widget.list);
+                            });
+                          }),
+                    ));
               }),
         )
       ]));
@@ -171,7 +179,6 @@ class _MainPageState extends State<MainPage> {
           final regExp = RegExp(pattern);
           if (value == null) return 'Enter an amount';
           if (value.length == 0) {
-            print(value);
             return 'Enter an amount';
           } else if (!regExp.hasMatch(value)) {
             return 'Enter a valid amount';
@@ -186,6 +193,7 @@ class _MainPageState extends State<MainPage> {
       );
 
   Widget buildIsUrgent() => CheckboxListTile(
+      dense: false,
       value: isUrgent,
       title: Text("Urgent?"),
       onChanged: (bool? newValue) {
@@ -195,9 +203,9 @@ class _MainPageState extends State<MainPage> {
       });
 
   Widget buildSubmit() => Builder(
-        builder: (context) => ButtonWidget(
-          text: 'Submit',
-          onClicked: () {
+        builder: (context) => ElevatedButton(
+          child: Text('Submit'),
+          onPressed: () {
             final isValid = formKey.currentState!.validate();
             // FocusScope.of(context).unfocus();
 
