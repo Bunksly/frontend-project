@@ -3,7 +3,6 @@ import 'package:frontend/home.dart';
 import 'package:frontend/donor.dart';
 import 'package:frontend/profile_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend/login.dart';
 import 'package:frontend/newLogin.dart';
 
 void main() {
@@ -37,6 +36,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           primaryColor: swatchColourCustom,
+          errorColor: secondaryColourCustom,
           accentColor: swatchColourCustom,
           primarySwatch: swatchColourCustom,
           textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
