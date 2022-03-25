@@ -3,6 +3,8 @@ import 'package:frontend/home.dart';
 import 'package:frontend/donor.dart';
 import 'package:frontend/profile_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/login.dart';
+import 'package:frontend/newLogin.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,6 +36,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+          primaryColor: swatchColourCustom,
+          accentColor: swatchColourCustom,
           primarySwatch: swatchColourCustom,
           textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
           scaffoldBackgroundColor: scaffoldBackgroundColourCustom,
@@ -50,6 +54,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => Home(),
         '/donor': (context) => Donor(),
         '/food-bank': (context) => FoodBankPage(),
+        '/login': ((context) => newLogin())
       },
     );
   }
