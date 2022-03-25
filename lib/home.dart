@@ -18,7 +18,12 @@ class Home extends StatelessWidget {
             onPressed: () {
               Navigator.pushNamed(context, '/food-bank');
             },
-            child: Text("foodbank"))
+            child: Text("foodbank")),
+        ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/login');
+            },
+            child: Text("login"))
       ],
     )));
   }
