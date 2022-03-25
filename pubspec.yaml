@@ -38,6 +38,8 @@ dependencies:
   http: ^0.13.4
   json_annotation: ^4.4.0
   json_serializable: ^6.1.5
+  dropdown_search: ^2.0.1
+  google_fonts: ^2.3.1
   flutter_google_street_view: ^2.2.6
 
 dev_dependencies:
