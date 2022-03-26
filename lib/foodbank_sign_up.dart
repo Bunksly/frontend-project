@@ -8,10 +8,210 @@ class FoodBankSignUp extends StatefulWidget {
 }
 
 class _FoodBankSignUpState extends State<FoodBankSignUp> {
+  final formKey = GlobalKey<FormState>();
+
+  Map signupData = {
+    "name": null,
+    "email": null,
+    "password": null,
+    "address": null,
+    "number": null,
+    "website": null
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Foodbank Sign Up")),
-    );
+        appBar: AppBar(title: Text("Foodbank Sign Up")),
+        body: Padding(
+            padding: EdgeInsets.all(15),
+            child: Center(
+              child: Container(
+                  padding: EdgeInsets.all(15),
+                  width: 300,
+                  height: 550,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10)),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3))
+                      ]),
+                  child: Form(
+                    key: formKey,
+                    child: Column(children: [
+                      Expanded(
+                          child: Text(
+                        "Fill in account details for registration",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      )),
+                      Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                                icon: Icon(Icons.account_box),
+                                labelText: "Charity Name",
+                                border: OutlineInputBorder()),
+                            validator: (String? value) {
+                              ;
+                              if (value == null || value.length == 0) {
+                                return "Enter name";
+                              } else if (value.length < 2) {
+                                return "Enter valid name";
+                              } else {
+                                return null;
+                              }
+                            },
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["name"] = value;
+                              });
+                            },
+                          )),
+                      Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                                icon: Icon(Icons.email),
+                                labelText: " Charity E-mail",
+                                border: OutlineInputBorder()),
+                            validator: ((String? value) {
+                              const pattern = r'(^[^\s@]+@[^\s@]+\.[^\s@]+$)';
+                              final regExp = RegExp(pattern);
+                              if (value == null || value.length == 0) {
+                                return "Enter an email";
+                              } else if (!regExp.hasMatch(value)) {
+                                return "Enter valid email";
+                              } else {
+                                return null;
+                              }
+                            }),
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["email"] = value;
+                              });
+                            },
+                          )),
+                      Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                                icon: Icon(Icons.lock),
+                                labelText: "Password",
+                                border: OutlineInputBorder()),
+                            obscureText: true,
+                            validator: ((String? value) {
+                              if (value == null || value.length == 0) {
+                                return "Enter a password";
+                              } else if (value.length < 5) {
+                                return "Enter valid password";
+                              } else {
+                                return null;
+                              }
+                            }),
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["password"] = value;
+                              });
+                            },
+                          )),
+                      Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                                icon: Icon(Icons.house),
+                                labelText: "Charity Address",
+                                border: OutlineInputBorder()),
+                            validator: (String? value) {
+                              if (value == null || value.length == 0) {
+                                return "Enter an address";
+                              } else if (value.length < 10) {
+                                return "Enter valid address";
+                              } else {
+                                return null;
+                              }
+                            },
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["address"] = value;
+                              });
+                            },
+                          )),
+                      Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                                icon: Icon(Icons.phone),
+                                labelText: "Charity Mobile Number",
+                                border: OutlineInputBorder()),
+                            validator: (String? value) {
+                              const pattern =
+                                  r'(^(07[\d]{8,12}|447[\d]{7,11})$)';
+                              final regexp = RegExp(pattern);
+                              if (value == null || value.length == 0) {
+                                return "Enter a number";
+                              } else if (value.length != 11) {
+                                return "Enter valid number";
+                              } else if (!regexp.hasMatch(value)) {
+                                return "Enter valid number";
+                              } else {
+                                return null;
+                              }
+                            },
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["number"] = value;
+                              });
+                            },
+                          )),
+                      Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                                icon: Icon(Icons.mouse),
+                                labelText: "Charity Website",
+                                border: OutlineInputBorder()),
+                            validator: (String? value) {
+                              const pattern =
+                                  r'(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})';
+                              final regexp = RegExp(pattern);
+                              if (value == null || value.length == 0) {
+                                return "Enter a url";
+                              } else if (!regexp.hasMatch(value)) {
+                                return "Enter valid url";
+                              } else {
+                                return null;
+                              }
+                            },
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["website"] = value;
+                              });
+                            },
+                          )),
+                      Expanded(
+                          child: ElevatedButton(
+                              onPressed: () {
+                                final isValid =
+                                    formKey.currentState!.validate();
+                                if (isValid) {
+                                  formKey.currentState!.save();
+                                  print(signupData);
+                                  //recieve return from endpoint with charityID
+                                  //navigate to charity porfilepage with charityData as param
+                                }
+                              },
+                              child: Text("Submit")))
+                    ]),
+                  )),
+            )));
   }
 }

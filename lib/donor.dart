@@ -100,7 +100,7 @@ class _DonorState extends State<Donor> {
                                           DetailedFoodBank(data: foodBank)),
                                 )
                               }),
-                          leading: Icon(Icons.fastfood),
+                          leading: Icon(Icons.food_bank),
                           title: Text(foodBank["foodbank"]["name"]),
                           trailing: Text(foodBank["distance_m"].toString() +
                               " metres away"),

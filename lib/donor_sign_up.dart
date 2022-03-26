@@ -9,6 +9,15 @@ class DonorSignUp extends StatefulWidget {
 
 class _DonorSignUpState extends State<DonorSignUp> {
   final formKey = GlobalKey<FormState>();
+
+  Map signupData = {
+    "name": null,
+    "email": null,
+    "password": null,
+    "address": null,
+    "number": null
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,6 +70,11 @@ class _DonorSignUpState extends State<DonorSignUp> {
                                 return null;
                               }
                             },
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["name"] = value;
+                              });
+                            },
                           )),
                       Expanded(
                           flex: 2,
@@ -80,6 +94,11 @@ class _DonorSignUpState extends State<DonorSignUp> {
                                 return null;
                               }
                             }),
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["email"] = value;
+                              });
+                            },
                           )),
                       Expanded(
                           flex: 2,
@@ -98,6 +117,11 @@ class _DonorSignUpState extends State<DonorSignUp> {
                                 return null;
                               }
                             }),
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["password"] = value;
+                              });
+                            },
                           )),
                       Expanded(
                           flex: 2,
@@ -114,6 +138,11 @@ class _DonorSignUpState extends State<DonorSignUp> {
                               } else {
                                 return null;
                               }
+                            },
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["address"] = value;
+                              });
                             },
                           )),
                       Expanded(
@@ -137,12 +166,23 @@ class _DonorSignUpState extends State<DonorSignUp> {
                                 return null;
                               }
                             },
+                            onSaved: (value) {
+                              setState(() {
+                                signupData["number"] = value;
+                              });
+                            },
                           )),
                       Expanded(
                           child: ElevatedButton(
                               onPressed: () {
                                 final isValid =
                                     formKey.currentState!.validate();
+                                if (isValid) {
+                                  formKey.currentState!.save();
+                                  print(signupData);
+                                  //recieve return from endpoint with userID
+                                  //navigate to list of foodbanks with userData as param
+                                }
                               },
                               child: Text("Submit")))
                     ]),

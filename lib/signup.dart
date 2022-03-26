@@ -21,10 +21,8 @@ class _SignUpState extends State<SignUp> {
           children: [
             SizedBox(height: 75),
             CircleAvatar(
-              radius: 50,
-              /*backgroundImage: NetworkImage(
-                    'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80')*/
-            ),
+                radius: 50,
+                backgroundImage: AssetImage("assets/donorimage.jpg")),
             const SizedBox(height: 10),
             Container(
                 width: 300,
@@ -48,10 +46,8 @@ class _SignUpState extends State<SignUp> {
                 )),
             const SizedBox(height: 75),
             CircleAvatar(
-              radius: 50,
-              /*backgroundImage: NetworkImage(
-                    'https://images.pexels.com/photos/6590920/pexels-photo-6590920.jpeg?cs=srgb&dl=pexels-cottonbro-6590920.jpg&fm=jpg')*/
-            ),
+                radius: 50,
+                backgroundImage: AssetImage("assets/foodbankimage.jpg")),
             const SizedBox(height: 10),
             Container(
               width: 300,
