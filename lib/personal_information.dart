@@ -12,15 +12,33 @@ class PersonalInfo extends StatelessWidget {
         body: Padding(
             padding: EdgeInsets.all(15),
             child: Center(
-                child: Form(
-              key: formKey,
-              child: Column(children: [
-                TextField(),
-                TextField(),
-                TextField(),
-                TextField(),
-                TextField(),
-              ]),
-            ))));
+                child: Container(
+                    padding: EdgeInsets.all(15),
+                    width: 300,
+                    height: 500,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10)),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: Offset(0, 3))
+                        ]),
+                    child: Form(
+                      key: formKey,
+                      child: Column(children: [
+                        TextField(),
+                        TextField(),
+                        TextField(),
+                        TextField(),
+                        TextField(),
+                      ]),
+                    )))));
   }
 }
