@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/user-profile-page.dart';
+import 'package:frontend/user-profile.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:frontend/main.dart';

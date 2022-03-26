@@ -93,41 +93,14 @@ class _UserProfileState extends State<UserProfile> {
                     Padding(
                       padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 0),
                       child: Icon(
-                        Icons.add_circle,
+                        Icons.check_circle_outline,
                         color: Colors.black,
                         size: 36,
                       ),
                     ),
                     Text(
-                      'Donate items',
+                      'Pledged items',
                     ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0, 30, 0, 0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 0),
-                      child: Icon(
-                        Icons.settings_outlined,
-                        color: Colors.black,
-                        size: 36,
-                      ),
-                    ),
-                    DropdownButton<String>(
-                      items: <String>['5 km', '10 km', '15 km', '20 km']
-                          .map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (_) {},
-                    )
                   ],
                 ),
               ),
