@@ -32,13 +32,7 @@ class PersonalInfo extends StatelessWidget {
                         ]),
                     child: Form(
                       key: formKey,
-                      child: Column(children: [
-                        TextField(),
-                        TextField(),
-                        TextField(),
-                        TextField(),
-                        TextField(),
-                      ]),
+                      child: Column(children: []),
                     )))));
   }
 }
