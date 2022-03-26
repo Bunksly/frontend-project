@@ -108,27 +108,30 @@ class _MainPageState extends State<MainPage> {
           child: ListView.builder(
               itemCount: widget.list.length,
               itemBuilder: (context, i) {
-                return ListTile(
-                    leading: urgentIcon(widget.list[i]["isUrgent"]),
-                    title: Text(widget.list[i]["itemName"] +
-                        "(${widget.list[i]["quantityRequired"].toString()})"),
-                    subtitle:
-                        Text("Category: " + widget.list[i]["categoryName"]),
-                    trailing: SizedBox(
-                      height: 25,
-                      child: FloatingActionButton.small(
-                          heroTag: DateTime.now().toString(),
-                          child: const Icon(Icons.clear),
-                          backgroundColor: Colors.red,
-                          onPressed: () {
-                            setState(() {
-                              widget.list.removeWhere((e) =>
-                                  e["itemName"] == widget.list[i]["itemName"] &&
-                                  e["isUrgent"] == widget.list[i]["isUrgent"]);
-                              widget.statefn(widget.list);
-                            });
-                          }),
-                    ));
+                return Card(
+                    child: ListTile(
+                        leading: urgentIcon(widget.list[i]["isUrgent"]),
+                        title: Text(widget.list[i]["itemName"] +
+                            "(${widget.list[i]["quantityRequired"].toString()})"),
+                        subtitle:
+                            Text("Category: " + widget.list[i]["categoryName"]),
+                        trailing: SizedBox(
+                          height: 25,
+                          child: FloatingActionButton.small(
+                              heroTag: DateTime.now().toString(),
+                              child: const Icon(Icons.clear),
+                              backgroundColor: Colors.red,
+                              onPressed: () {
+                                setState(() {
+                                  widget.list.removeWhere((e) =>
+                                      e["itemName"] ==
+                                          widget.list[i]["itemName"] &&
+                                      e["isUrgent"] ==
+                                          widget.list[i]["isUrgent"]);
+                                  widget.statefn(widget.list);
+                                });
+                              }),
+                        )));
               }),
         )
       ]));

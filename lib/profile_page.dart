@@ -99,13 +99,14 @@ class _FoodBankPageState extends State<FoodBankPage> {
                   child: ListView.builder(
                       itemCount: needList.length,
                       itemBuilder: (context, i) {
-                        return ListTile(
+                        return Card(
+                            child: ListTile(
                           leading: urgentIcon(needList[i]["isUrgent"]),
                           title: Text(needList[i]["itemName"] +
                               "(${needList[i]["quantityRequired"].toString()})"),
                           trailing: Text(needList[i]["categoryName"]),
                           //  trailing:
-                        );
+                        ));
                       }))
             ])));
   }

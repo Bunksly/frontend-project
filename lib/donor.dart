@@ -64,9 +64,7 @@ class _DonorState extends State<Donor> {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => UserProfile()),
-                  );
+                  Navigator.pushNamed(context, '/profile');
                 },
                 icon: Icon(Icons.account_box))
           ],
@@ -92,7 +90,8 @@ class _DonorState extends State<Donor> {
                       itemCount: foodBankList.length,
                       itemBuilder: (context, i) {
                         final foodBank = foodBankList[i];
-                        return ListTile(
+                        return Card(
+                            child: ListTile(
                           onTap: (() => {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
@@ -105,7 +104,7 @@ class _DonorState extends State<Donor> {
                           trailing: Text(foodBank["distance_m"].toString() +
                               " metres away"),
                           subtitle: Text(foodBank["address"]),
-                        );
+                        ));
                       },
                     )))
           ],
