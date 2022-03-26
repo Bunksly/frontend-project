@@ -32,7 +32,45 @@ class PersonalInfo extends StatelessWidget {
                         ]),
                     child: Form(
                       key: formKey,
-                      child: Column(children: []),
+                      child: Column(children: [
+                        Expanded(
+                            child: Text(
+                          "Account Details",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        )),
+                        Expanded(
+                            flex: 2,
+                            child: ListTile(
+                                leading: Icon(Icons.account_box),
+                                title: Text(data["name"]))),
+                        Expanded(
+                            flex: 2,
+                            child: ListTile(
+                                leading: Icon(Icons.email),
+                                title: Text(data["email"]))),
+                        Expanded(
+                            flex: 2,
+                            child: ListTile(
+                                leading: Icon(Icons.lock),
+                                title: Text("****"))),
+                        Expanded(
+                            flex: 2,
+                            child: ListTile(
+                                leading: Icon(Icons.house),
+                                title: Text(data["address"]))),
+                        Expanded(
+                            flex: 2,
+                            child: ListTile(
+                                leading: Icon(Icons.phone),
+                                title: Text(data["number"]))),
+                        Expanded(
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  print("insert useful functionality here");
+                                },
+                                child: Text("Modify")))
+                      ]),
                     )))));
   }
 }

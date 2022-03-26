@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/karma.dart';
 import 'package:frontend/personal_information.dart';
+import 'package:frontend/pledged_items.dart';
 
 class UserProfile extends StatefulWidget {
   const UserProfile({Key? key}) : super(key: key);
@@ -14,8 +16,13 @@ class _UserProfileState extends State<UserProfile> {
     'image':
         'https://images.unsplash.com/photo-1598439119086-35655b8c333d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80',
     'address': 'Industrial freezer, Manningham, Bradford',
-    'number': 07898898898,
-    'email': 'test@testmail.co.uk'
+    'number': '07898898898',
+    'email': 'test@testmail.co.uk',
+    'karma': '150',
+    'pledges': [
+      {"charity": "Leeds Foodbank", "item": "Bottles of Milk", "amount": "50"},
+      {"charity": "Charitable Cause", "item": "Bags of Pasta", "amount": "200"},
+    ]
   };
   @override
   Widget build(BuildContext context) {
@@ -65,12 +72,24 @@ class _UserProfileState extends State<UserProfile> {
                       child: ListTile(
                           leading: Icon(Icons.check_circle_outline),
                           title: Text('Pledged Items'),
-                          onTap: () => print("Chickens"))),
+                          onTap: () => {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          PledgedItems(data: userData)),
+                                )
+                              })),
                   Card(
                       child: ListTile(
                           leading: Icon(Icons.favorite_border),
                           title: Text('Karma'),
-                          onTap: () => print("Chickens"))),
+                          onTap: () => {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          Karma(data: userData)),
+                                )
+                              })),
                 ],
               ))
             ]),
