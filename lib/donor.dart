@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/user-profile-page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import './foodbankProfile.dart';
@@ -97,7 +98,7 @@ class _DonorState extends State<Donor> {
                                           DetailedFoodBank(data: foodBank)),
                                 )
                               }),
-                          leading: Icon(Icons.fastfood),
+                          leading: Icon(Icons.food_bank),
                           title: Text(foodBank["foodbank"]["name"]),
                           trailing: Text(foodBank["distance_m"].toString() +
                               " metres away"),

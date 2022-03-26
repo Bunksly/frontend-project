@@ -3,7 +3,10 @@ import 'package:frontend/home.dart';
 import 'package:frontend/donor.dart';
 import 'package:frontend/profile_page.dart';
 import 'package:frontend/user-profile.dart';
+import 'package:frontend/signup.dart';
+
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend/newLogin.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,6 +38,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+          primaryColor: swatchColourCustom,
+          errorColor: secondaryColourCustom,
+          accentColor: swatchColourCustom,
           primarySwatch: swatchColourCustom,
           textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
           scaffoldBackgroundColor: scaffoldBackgroundColourCustom,
@@ -46,12 +52,15 @@ class MyApp extends StatelessWidget {
                       MaterialStateProperty.all<Color>(buttonColourCustom))),
           buttonTheme: ButtonTheme.of(context)
               .copyWith(buttonColor: buttonColourCustom)),
-      initialRoute: '/',
+      initialRoute: '/login',
       routes: {
         '/': (context) => Home(),
         '/donor': (context) => Donor(),
         '/food-bank': (context) => FoodBankPage(),
         '/profile': (context) => UserProfile()
+        '/login': ((context) => NewLogin()),
+        '/signup': ((context) => SignUp())
+
       },
     );
   }
