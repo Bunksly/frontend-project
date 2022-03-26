@@ -3,14 +3,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/signup.dart';
 
-class newLogin extends StatefulWidget {
-  const newLogin({Key? key}) : super(key: key);
+class NewLogin extends StatefulWidget {
+  const NewLogin({Key? key}) : super(key: key);
 
   @override
-  State<newLogin> createState() => _newLoginState();
+  State<NewLogin> createState() => _NewLoginState();
 }
 
-class _newLoginState extends State<newLogin> {
+class _NewLoginState extends State<NewLogin> {
   final formKey = GlobalKey<FormState>();
 
   final Map loginData = {"email": null, "password": null};
@@ -115,10 +115,7 @@ class _newLoginState extends State<newLogin> {
                           TextSpan(
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => SignUp()));
+                                  Navigator.pushNamed(context, '/signup');
                                 },
                               style: const TextStyle(
                                   color: Color(0xff749C75),

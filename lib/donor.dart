@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/user-profile-page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:frontend/main.dart';
@@ -49,29 +50,6 @@ class _DonorState extends State<Donor> {
     });
   }
 
-  Widget appBarSearch() {
-    if (isSearching) {
-      return TextFormField(
-        maxLines: 1,
-        minLines: 1,
-        decoration: const InputDecoration(
-          contentPadding: EdgeInsets.all(10),
-          isDense: true,
-          filled: true,
-          border: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.white),
-          ),
-          fillColor: Colors.white,
-        ),
-        onFieldSubmitted: (value) {
-          print(value);
-        },
-      );
-    } else {
-      return Text("Local Foodbanks");
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -82,15 +60,15 @@ class _DonorState extends State<Donor> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: appBarSearch(),
+          title: Text("Local Foodbanks"),
           actions: [
             IconButton(
                 onPressed: () {
-                  setState(() {
-                    isSearching = !isSearching;
-                  });
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => UserProfile()),
+                  );
                 },
-                icon: Icon(Icons.search))
+                icon: Icon(Icons.account_box))
           ],
         ),
         body: Column(
@@ -122,7 +100,7 @@ class _DonorState extends State<Donor> {
                                           DetailedFoodBank(data: foodBank)),
                                 )
                               }),
-                          leading: Icon(Icons.fastfood),
+                          leading: Icon(Icons.food_bank),
                           title: Text(foodBank["foodbank"]["name"]),
                           trailing: Text(foodBank["distance_m"].toString() +
                               " metres away"),
