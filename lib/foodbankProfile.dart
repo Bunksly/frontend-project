@@ -94,7 +94,6 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
                 itemCount: needsList.length,
                 itemBuilder: (context, i) {
                   final need = needsList[i];
-                  print(need);
                   return ListTile(
                     leading: Text(need["category_name"]),
                     title: Text(need["item_id"].toString()),

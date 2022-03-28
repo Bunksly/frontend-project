@@ -4,7 +4,6 @@ import 'package:frontend/donor.dart';
 import 'package:frontend/profile_page.dart';
 import 'package:frontend/user-profile.dart';
 import 'package:frontend/signup.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/newLogin.dart';
 
@@ -42,7 +41,7 @@ class MyApp extends StatelessWidget {
           errorColor: secondaryColourCustom,
           accentColor: swatchColourCustom,
           primarySwatch: swatchColourCustom,
-          // textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
+          textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
           scaffoldBackgroundColor: scaffoldBackgroundColourCustom,
           checkboxTheme: CheckboxThemeData(
               fillColor: MaterialStateProperty.all(Color(0xffC17767))),
