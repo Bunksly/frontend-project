@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class DonorSignUp extends StatefulWidget {
   const DonorSignUp({Key? key}) : super(key: key);
@@ -179,9 +182,25 @@ class _DonorSignUpState extends State<DonorSignUp> {
                                     formKey.currentState!.validate();
                                 if (isValid) {
                                   formKey.currentState!.save();
-                                  print(signupData);
-                                  //recieve return from endpoint with userID
-                                  //navigate to list of foodbanks with userData as param
+                                  final encodedReq = jsonEncode({
+                                    "email_address": signupData["email"],
+                                    "password": signupData["password"],
+                                    "username": signupData["name"],
+                                    "address": signupData["address"]
+                                  });
+                                  Future<http.Response> donorSignup(
+                                      signupData) {
+                                    return http.post(
+                                        Uri.parse(
+                                            'https://charity-project-hrmjjb.herokuapp.com/api/donors'),
+                                        headers: {
+                                          'Content-Type':
+                                              'application/json; charset=UTF-8',
+                                        },
+                                        body: encodedReq);
+                                  }
+
+                                  donorSignup(signupData);
                                 }
                               },
                               child: Text("Submit")))

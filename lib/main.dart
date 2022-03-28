@@ -57,10 +57,9 @@ class MyApp extends StatelessWidget {
         '/': (context) => Home(),
         '/donor': (context) => Donor(),
         '/food-bank': (context) => FoodBankPage(),
-        '/profile': (context) => UserProfile()
+        '/profile': (context) => UserProfile(),
         '/login': ((context) => NewLogin()),
         '/signup': ((context) => SignUp())
-
       },
     );
   }
