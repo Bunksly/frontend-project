@@ -22,8 +22,10 @@ class _DonorState extends State<Donor> {
   final Map<String, Marker> _markers = {};
   double userlat = 0;
   double userlng = 0;
-  var foodBankList = [];
-  var url = "https://charity-project-hrmjjb.herokuapp.com/api/charities";
+  int dropdownValue = 5000;
+  int range = 5000;
+  List foodBankList = [];
+  String url = "https://charity-project-hrmjjb.herokuapp.com/api/charities";
   bool isSearching = false;
 
   void fetchFoodBanks(url) async {
@@ -31,7 +33,6 @@ class _DonorState extends State<Donor> {
       final rawData = await get(Uri.parse(url));
       final data = jsonDecode(rawData.body);
       final output = data["charities"] as List;
-      print(output);
       setState(() {
         foodBankList = output;
         _markers.clear();
@@ -58,8 +59,9 @@ class _DonorState extends State<Donor> {
     fetchFoodBanks(url);
     userlat = 53.80754277823678;
     userlng = -1.5484416213022532;
+    range = 5000;
     url =
-        "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}";
+        "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
   }
 
   @override
@@ -84,10 +86,33 @@ class _DonorState extends State<Donor> {
               markers: _markers.values.toSet(),
             )),
             Padding(
-                padding: EdgeInsets.fromLTRB(15, 5, 15, 0),
+                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
                 child: Row(children: [
-                  Expanded(child: DropdownSearch()),
-                  Expanded(child: DropdownSearch()),
+                  Expanded(
+                      child: DropdownSearch<int>(
+                          mode: Mode.MENU,
+                          items: [500, 1000, 2500, 5000],
+                          selectedItem: dropdownValue,
+                          label: "Select search range(m)",
+                          showSearchBox: false,
+                          validator: (value) {
+                            if (value == null) return "Select Range";
+                            return null;
+                          },
+                          onChanged: (int? newValue) {
+                            setState(() {
+                              dropdownValue = newValue!;
+                              range = newValue;
+                              fetchFoodBanks(url);
+                            });
+                          })),
+                  Expanded(
+                      child: TextFormField(
+                    onFieldSubmitted: (value) {},
+                    decoration: InputDecoration(
+                        labelText: "Search by address",
+                        border: OutlineInputBorder()),
+                  )),
                 ])),
             Expanded(
                 child: Padding(
@@ -96,7 +121,6 @@ class _DonorState extends State<Donor> {
                       itemCount: foodBankList.length,
                       itemBuilder: (context, i) {
                         final foodBank = foodBankList[i];
-                        print(foodBank);
                         return Card(
                             child: ListTile(
                           onTap: (() => {

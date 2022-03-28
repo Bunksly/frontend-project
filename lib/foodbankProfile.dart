@@ -20,7 +20,6 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
     final needsString = "Unknown";
     final needsList = [];
     final streetViewLatLng = widget.data["lat_lng"];
-    print(widget.data["lat_lng"]);
     final lat = widget.data["lat"];
     assert(lat is double);
     final lng = widget.data["lng"];
@@ -38,7 +37,7 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
                   onStreetViewCreated:
                       (StreetViewController controller) async {})),
           Expanded(
-              flex: 9,
+              flex: 5,
               child: Padding(
                   padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
                   child: Column(
@@ -46,10 +45,6 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
                       ListTile(
                         leading: Icon(Icons.location_pin),
                         title: Text(widget.data["address"]),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.phone),
-                        title: Text("number?"),
                       ),
                       ListTile(
                         leading: Icon(Icons.email),
