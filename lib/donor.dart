@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/user-profile-page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import './foodbankProfile.dart';
@@ -21,38 +20,46 @@ class Donor extends StatefulWidget {
 
 class _DonorState extends State<Donor> {
   final Map<String, Marker> _markers = {};
+  double userlat = 0;
+  double userlng = 0;
   var foodBankList = [];
-  var url =
-      "https://www.givefood.org.uk/api/2/locations/search/?address=West%20One,%20100%20Wellington%20St,%20Leeds%20LS1%204LT";
+  var url = "https://charity-project-hrmjjb.herokuapp.com/api/charities";
   bool isSearching = false;
 
   void fetchFoodBanks(url) async {
-    final rawData = await get(Uri.parse(url));
-    final data = jsonDecode(rawData.body) as List;
-    setState(() {
-      foodBankList = data;
-      _markers.clear();
-      for (final foodbank in data) {
-        final splitted = foodbank["lat_lng"].split(',');
-        final lat = double.parse((splitted[0]));
-        assert(lat is double);
-        final lng = double.parse((splitted[1]));
-        assert(lng is double);
-        final marker = Marker(
-            markerId: MarkerId(foodbank["foodbank"]["name"]),
-            position: LatLng(lat, lng),
-            infoWindow: InfoWindow(
-                title: foodbank["foodbank"]["name"],
-                snippet: foodbank["address"]));
-        _markers[foodbank["foodbank"]["name"]] = marker;
-      }
-    });
+    try {
+      final rawData = await get(Uri.parse(url));
+      final data = jsonDecode(rawData.body);
+      final output = data["charities"] as List;
+      print(output);
+      setState(() {
+        foodBankList = output;
+        _markers.clear();
+        for (final foodbank in output) {
+          final lat = foodbank["lat"];
+          final lng = foodbank["lng"];
+          final marker = Marker(
+              markerId: MarkerId(foodbank["charity_name"]),
+              position: LatLng(lat, lng),
+              infoWindow: InfoWindow(
+                  title: foodbank["charity_name"],
+                  snippet: foodbank["address"]));
+          _markers[foodbank["charity_name"]] = marker;
+        }
+      });
+    } catch (err) {
+      print(err);
+    }
   }
 
   @override
   void initState() {
     super.initState();
     fetchFoodBanks(url);
+    userlat = 53.80754277823678;
+    userlng = -1.5484416213022532;
+    url =
+        "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}";
   }
 
   @override
@@ -89,6 +96,7 @@ class _DonorState extends State<Donor> {
                       itemCount: foodBankList.length,
                       itemBuilder: (context, i) {
                         final foodBank = foodBankList[i];
+                        print(foodBank);
                         return Card(
                             child: ListTile(
                           onTap: (() => {
@@ -99,9 +107,8 @@ class _DonorState extends State<Donor> {
                                 )
                               }),
                           leading: Icon(Icons.food_bank),
-                          title: Text(foodBank["foodbank"]["name"]),
-                          trailing: Text(foodBank["distance_m"].toString() +
-                              " metres away"),
+                          title: Text(foodBank["charity_name"]),
+                          trailing: Text(foodBank["distance"].toString() + "m"),
                           subtitle: Text(foodBank["address"]),
                         ));
                       },

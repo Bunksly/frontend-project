@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
           errorColor: secondaryColourCustom,
           accentColor: swatchColourCustom,
           primarySwatch: swatchColourCustom,
-          textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
+          // textTheme: GoogleFonts.latoTextTheme(Theme.of(context).textTheme),
           scaffoldBackgroundColor: scaffoldBackgroundColourCustom,
           checkboxTheme: CheckboxThemeData(
               fillColor: MaterialStateProperty.all(Color(0xffC17767))),
@@ -57,10 +57,9 @@ class MyApp extends StatelessWidget {
         '/': (context) => Home(),
         '/donor': (context) => Donor(),
         '/food-bank': (context) => FoodBankPage(),
-        '/profile': (context) => UserProfile()
+        '/profile': (context) => UserProfile(),
         '/login': ((context) => NewLogin()),
         '/signup': ((context) => SignUp())
-
       },
     );
   }

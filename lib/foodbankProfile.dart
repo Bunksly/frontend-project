@@ -17,17 +17,16 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
 
   @override
   Widget build(BuildContext context) {
-    final needsString = widget.data["needs"]["needs"].toString();
-    final needsList = needsString.split("\r\n");
+    final needsString = "Unknown";
+    final needsList = [];
     final streetViewLatLng = widget.data["lat_lng"];
     print(widget.data["lat_lng"]);
-    final splitted = streetViewLatLng.split(',');
-    final lat = double.parse((splitted[0]));
+    final lat = widget.data["lat"];
     assert(lat is double);
-    final lng = double.parse((splitted[1]));
+    final lng = widget.data["lng"];
     assert(lng is double);
     return Scaffold(
-        appBar: AppBar(title: Text(widget.data["foodbank"]["name"])),
+        appBar: AppBar(title: Text(widget.data["charity_name"])),
         body: Column(children: [
           Expanded(
               flex: 8,
@@ -50,11 +49,11 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
                       ),
                       ListTile(
                         leading: Icon(Icons.phone),
-                        title: Text(widget.data["phone"]),
+                        title: Text("number?"),
                       ),
                       ListTile(
                         leading: Icon(Icons.email),
-                        title: Text(widget.data["email"]),
+                        title: Text(widget.data["email_address"]),
                       ),
                     ],
                   ))),
