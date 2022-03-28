@@ -62,6 +62,7 @@ class _DonorState extends State<Donor> {
     range = 5000;
     url =
         "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
+    print(url);
   }
 
   @override
@@ -93,7 +94,7 @@ class _DonorState extends State<Donor> {
                           mode: Mode.MENU,
                           items: [500, 1000, 2500, 5000],
                           selectedItem: dropdownValue,
-                          label: "Select search range(m)",
+                          label: "Search range(m)",
                           showSearchBox: false,
                           validator: (value) {
                             if (value == null) return "Select Range";
@@ -103,6 +104,8 @@ class _DonorState extends State<Donor> {
                             setState(() {
                               dropdownValue = newValue!;
                               range = newValue;
+                              url =
+                                  "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
                               fetchFoodBanks(url);
                             });
                           })),
