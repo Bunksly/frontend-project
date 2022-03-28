@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/user-profile-page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
-import 'package:frontend/main.dart';
 import './foodbankProfile.dart';
 
 class Donor extends StatefulWidget {
@@ -64,9 +63,7 @@ class _DonorState extends State<Donor> {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => UserProfile()),
-                  );
+                  Navigator.pushNamed(context, '/profile');
                 },
                 icon: Icon(Icons.account_box))
           ],
@@ -92,7 +89,8 @@ class _DonorState extends State<Donor> {
                       itemCount: foodBankList.length,
                       itemBuilder: (context, i) {
                         final foodBank = foodBankList[i];
-                        return ListTile(
+                        return Card(
+                            child: ListTile(
                           onTap: (() => {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
@@ -105,7 +103,7 @@ class _DonorState extends State<Donor> {
                           trailing: Text(foodBank["distance_m"].toString() +
                               " metres away"),
                           subtitle: Text(foodBank["address"]),
-                        );
+                        ));
                       },
                     )))
           ],
