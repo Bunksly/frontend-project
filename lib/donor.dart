@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import './foodbankProfile.dart';
+import 'package:geocode/geocode.dart';
 
 class Donor extends StatefulWidget {
   const Donor({Key? key}) : super(key: key);
@@ -20,8 +21,8 @@ class Donor extends StatefulWidget {
 
 class _DonorState extends State<Donor> {
   final Map<String, Marker> _markers = {};
-  double userlat = 0;
-  double userlng = 0;
+  double? userlat = 0;
+  double? userlng = 0;
   int dropdownValue = 5000;
   int range = 5000;
   List foodBankList = [];
@@ -53,6 +54,22 @@ class _DonorState extends State<Donor> {
     }
   }
 
+  getLatLng(value) async {
+    GeoCode geoCode = GeoCode();
+    try {
+      Coordinates coordinates = await geoCode.forwardGeocoding(address: value);
+      setState(() {
+        userlat = coordinates.latitude;
+        userlng = coordinates.longitude;
+        url =
+            "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
+        fetchFoodBanks(url);
+      });
+    } catch (err) {
+      print(err);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -62,7 +79,6 @@ class _DonorState extends State<Donor> {
     range = 5000;
     url =
         "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
-    print(url);
   }
 
   @override
@@ -111,7 +127,9 @@ class _DonorState extends State<Donor> {
                           })),
                   Expanded(
                       child: TextFormField(
-                    onFieldSubmitted: (value) {},
+                    onFieldSubmitted: (value) {
+                      getLatLng(value);
+                    },
                     decoration: InputDecoration(
                         labelText: "Search by address",
                         border: OutlineInputBorder()),
