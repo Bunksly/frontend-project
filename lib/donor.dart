@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/secure-storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import './foodbankProfile.dart';
@@ -21,6 +22,7 @@ class Donor extends StatefulWidget {
 }
 
 class _DonorState extends State<Donor> {
+  late String? accessToken;
   late GoogleMapController _googleMapController;
   final Map<String, Marker> _markers = {};
   late Marker currentPosMarker;
@@ -94,6 +96,16 @@ class _DonorState extends State<Donor> {
     url =
         "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
     fetchFoodBanks(url);
+    print(widget.userId);
+    init();
+  }
+
+  Future init() async {
+    final getToken = await UserSecureStorage.getAccessToken();
+    setState(() {
+      accessToken = getToken;
+      print(accessToken);
+    });
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/request_page.dart';
+import 'package:frontend/secure-storage.dart';
 
 class FoodBankPage extends StatefulWidget {
   final int userId;
@@ -10,6 +11,7 @@ class FoodBankPage extends StatefulWidget {
 }
 
 class _FoodBankPageState extends State<FoodBankPage> {
+  late String? accessToken;
   List<Map> needList = [
     {
       "itemName": "pasta",
@@ -48,6 +50,15 @@ class _FoodBankPageState extends State<FoodBankPage> {
     // TODO: implement initState
     super.initState();
     print(widget.userId);
+    init();
+  }
+
+  Future init() async {
+    final getToken = await UserSecureStorage.getAccessToken();
+    setState(() {
+      accessToken = getToken;
+      print(accessToken);
+    });
   }
 
   @override

@@ -3,12 +3,10 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/donor.dart';
+import 'package:frontend/secure-storage.dart';
 import 'package:frontend/signup.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/profile_page.dart';
-
-final storage = FlutterSecureStorage();
 
 class NewLogin extends StatefulWidget {
   const NewLogin({Key? key}) : super(key: key);
@@ -24,8 +22,8 @@ class _NewLoginState extends State<NewLogin> {
 
   bool? valueCheck = false;
 
-  void writeToStorage(response) async {
-    await storage.write(key: response["donator_id"], value: response);
+  void setAccessToken(value) async {
+    await UserSecureStorage.setAccessToken(value);
   }
 
   @override
@@ -152,6 +150,7 @@ class _NewLoginState extends State<NewLogin> {
                                           },
                                           body: encodedReq);
                                       final data = jsonDecode(response.body);
+                                      setAccessToken(data["accessToken"]);
                                       if (response.statusCode != 202) {
                                         return ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarError);
@@ -188,6 +187,7 @@ class _NewLoginState extends State<NewLogin> {
                                           },
                                           body: encodedReq);
                                       final data = jsonDecode(response.body);
+                                      setAccessToken(data["accessToken"]);
                                       if (response.statusCode != 202) {
                                         return ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarError);
