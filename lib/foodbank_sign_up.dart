@@ -231,6 +231,7 @@ class _FoodBankSignUpState extends State<FoodBankSignUp> {
                                                 'application/json; charset=UTF-8',
                                           },
                                           body: encodedReq);
+                                      print(response.body);
                                       if (response.statusCode != 201) {
                                         return ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarError);

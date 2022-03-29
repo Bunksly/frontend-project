@@ -7,7 +7,8 @@ import './foodbankProfile.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Donor extends StatefulWidget {
-  const Donor({Key? key}) : super(key: key);
+  final int userId;
+  const Donor({Key? key, required this.userId}) : super(key: key);
 
   static final LatLng _kMapCenter =
       LatLng(53.80754277823678, -1.5484416213022532);

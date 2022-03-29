@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/request_page.dart';
 
 class FoodBankPage extends StatefulWidget {
-  const FoodBankPage({Key? key}) : super(key: key);
+  final int userId;
+  const FoodBankPage({Key? key, required this.userId}) : super(key: key);
 
   @override
   State<FoodBankPage> createState() => _FoodBankPageState();
@@ -40,6 +41,13 @@ class _FoodBankPageState extends State<FoodBankPage> {
     setState(() {
       needList = input;
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print(widget.userId);
   }
 
   @override
