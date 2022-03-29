@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import './foodbankProfile.dart';
-import 'package:geocode/geocode.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Donor extends StatefulWidget {
   const Donor({Key? key}) : super(key: key);
@@ -20,13 +20,15 @@ class Donor extends StatefulWidget {
 }
 
 class _DonorState extends State<Donor> {
+  late GoogleMapController _googleMapController;
   final Map<String, Marker> _markers = {};
-  double? userlat = 0;
-  double? userlng = 0;
+  late Marker currentPosMarker;
+  late double userlat;
+  late double userlng;
   int dropdownValue = 5000;
-  int range = 5000;
+  late int range;
   List foodBankList = [];
-  String url = "https://charity-project-hrmjjb.herokuapp.com/api/charities";
+  late String url;
   bool isSearching = false;
 
   void fetchFoodBanks(url) async {
@@ -34,20 +36,27 @@ class _DonorState extends State<Donor> {
       final rawData = await get(Uri.parse(url));
       final data = jsonDecode(rawData.body);
       final output = data["charities"] as List;
+      _markers.clear();
+      currentPosMarker = Marker(
+          markerId: MarkerId("current_position" + DateTime.now().toString()),
+          infoWindow: InfoWindow(title: 'Current Position'),
+          position: LatLng(userlat, userlng),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure));
+      _markers["current_position" + DateTime.now().toString()] =
+          currentPosMarker;
+      for (final foodbank in output) {
+        final lat = foodbank["lat"];
+        final lng = foodbank["lng"];
+        final marker = Marker(
+            markerId: MarkerId(foodbank["charity_name"]),
+            position: LatLng(lat, lng),
+            infoWindow: InfoWindow(
+                title: foodbank["charity_name"], snippet: foodbank["address"]));
+        _markers[foodbank["charity_name"]] = marker;
+      }
       setState(() {
         foodBankList = output;
-        _markers.clear();
-        for (final foodbank in output) {
-          final lat = foodbank["lat"];
-          final lng = foodbank["lng"];
-          final marker = Marker(
-              markerId: MarkerId(foodbank["charity_name"]),
-              position: LatLng(lat, lng),
-              infoWindow: InfoWindow(
-                  title: foodbank["charity_name"],
-                  snippet: foodbank["address"]));
-          _markers[foodbank["charity_name"]] = marker;
-        }
       });
     } catch (err) {
       print(err);
@@ -55,12 +64,17 @@ class _DonorState extends State<Donor> {
   }
 
   getLatLng(value) async {
-    GeoCode geoCode = GeoCode();
+    final geoUrl =
+        value.replaceAll(RegExp(r'([,\s]\s*)'), "%20") + "%20United%20Kingdom";
     try {
-      Coordinates coordinates = await geoCode.forwardGeocoding(address: value);
+      final response = await get(Uri.parse(
+          "https://api.myptv.com/geocoding/v1/locations/by-text?searchText=${geoUrl}&apiKey=${env["PTVKEY"]}"));
+      final data = jsonDecode(response.body);
       setState(() {
-        userlat = coordinates.latitude;
-        userlng = coordinates.longitude;
+        userlat = data["locations"][0]["referencePosition"]["latitude"];
+        userlng = data["locations"][0]["referencePosition"]["longitude"];
+        _googleMapController
+            .animateCamera(CameraUpdate.newLatLng(LatLng(userlat, userlng)));
         url =
             "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
         fetchFoodBanks(url);
@@ -73,12 +87,12 @@ class _DonorState extends State<Donor> {
   @override
   void initState() {
     super.initState();
-    fetchFoodBanks(url);
     userlat = 53.80754277823678;
     userlng = -1.5484416213022532;
     range = 5000;
     url =
         "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
+    fetchFoodBanks(url);
   }
 
   @override
@@ -101,6 +115,10 @@ class _DonorState extends State<Donor> {
               initialCameraPosition: Donor._kInitialPosition,
               mapType: MapType.hybrid,
               markers: _markers.values.toSet(),
+              myLocationEnabled: false,
+              onMapCreated: (controller) {
+                _googleMapController = controller;
+              },
             )),
             Padding(
                 padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
@@ -127,7 +145,7 @@ class _DonorState extends State<Donor> {
                           })),
                   Expanded(
                       child: TextFormField(
-                    onFieldSubmitted: (value) {
+                    onFieldSubmitted: (String value) {
                       getLatLng(value);
                     },
                     decoration: InputDecoration(
