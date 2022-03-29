@@ -125,12 +125,12 @@ class _NewLoginState extends State<NewLogin> {
                                     backgroundColor: Color(0xffC17767));
                                 final isValid =
                                     formKey.currentState!.validate();
+                                final encodedReq = jsonEncode({
+                                  "email_address": loginData["email"],
+                                  "password": loginData["password"],
+                                });
                                 if (isValid && valueCheck!) {
                                   formKey.currentState!.save();
-                                  final encodedReq = jsonEncode({
-                                    "email_address": loginData["email"],
-                                    "password": loginData["password"],
-                                  });
                                   foodbankSignIn(loginData) async {
                                     try {
                                       final response = await http.post(
@@ -156,6 +156,32 @@ class _NewLoginState extends State<NewLogin> {
                                   }
 
                                   foodbankSignIn(loginData);
+                                } else if (isValid) {
+                                  formKey.currentState!.save();
+                                  donorSignIn(loginData) async {
+                                    try {
+                                      final response = await http.post(
+                                          Uri.parse(
+                                              'https://charity-project-hrmjjb.herokuapp.com/api/donors/signin'),
+                                          headers: {
+                                            'Content-Type':
+                                                'application/json; charset=UTF-8',
+                                          },
+                                          body: encodedReq);
+                                      print(response.body);
+                                      if (response.statusCode != 202) {
+                                        return ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBarError);
+                                      } else
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBarSucess);
+                                      Navigator.pushNamed(context, '/donor');
+                                    } catch (error) {
+                                      print(error);
+                                    }
+                                  }
+
+                                  donorSignIn(loginData);
                                 }
                               },
                             )),
