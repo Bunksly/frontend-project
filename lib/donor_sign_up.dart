@@ -1,4 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:frontend/donor.dart';
+import 'dart:async';
 
 class DonorSignUp extends StatefulWidget {
   const DonorSignUp({Key? key}) : super(key: key);
@@ -175,13 +179,46 @@ class _DonorSignUpState extends State<DonorSignUp> {
                       Expanded(
                           child: ElevatedButton(
                               onPressed: () {
+                                final snackBarSucess = SnackBar(
+                                    content: Text("Signup sucessful!"),
+                                    backgroundColor: Color(0xff749C75));
+                                final snackBarError = SnackBar(
+                                    content:
+                                        Text("Signup error, please try again"),
+                                    backgroundColor: Color(0xffC17767));
                                 final isValid =
                                     formKey.currentState!.validate();
                                 if (isValid) {
                                   formKey.currentState!.save();
-                                  print(signupData);
-                                  //recieve return from endpoint with userID
-                                  //navigate to list of foodbanks with userData as param
+                                  final encodedReq = jsonEncode({
+                                    "email_address": signupData["email"],
+                                    "password": signupData["password"],
+                                    "username": signupData["name"],
+                                    "address": signupData["address"]
+                                  });
+                                  donorSignup(signupData) async {
+                                    try {
+                                      final response = await http.post(
+                                          Uri.parse(
+                                              'https://charity-project-hrmjjb.herokuapp.com/api/donors'),
+                                          headers: {
+                                            'Content-Type':
+                                                'application/json; charset=UTF-8',
+                                          },
+                                          body: encodedReq);
+                                      if (response.statusCode != 201) {
+                                        return ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBarError);
+                                      } else
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBarSucess);
+                                      Navigator.pushNamed(context, '/donor');
+                                    } catch (error) {
+                                      print(error);
+                                    }
+                                  }
+
+                                  donorSignup(signupData);
                                 }
                               },
                               child: Text("Submit")))

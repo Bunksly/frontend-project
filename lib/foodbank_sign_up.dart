@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:frontend/profile_page.dart';
+import 'package:http/http.dart' as http;
 
 class FoodBankSignUp extends StatefulWidget {
   const FoodBankSignUp({Key? key}) : super(key: key);
@@ -200,13 +203,48 @@ class _FoodBankSignUpState extends State<FoodBankSignUp> {
                       Expanded(
                           child: ElevatedButton(
                               onPressed: () {
+                                final snackBarSucess = SnackBar(
+                                    content: Text("Signup sucessful!"),
+                                    backgroundColor: Color(0xff749C75));
+                                final snackBarError = SnackBar(
+                                    content:
+                                        Text("Signup error, please try again"),
+                                    backgroundColor: Color(0xffC17767));
                                 final isValid =
                                     formKey.currentState!.validate();
                                 if (isValid) {
                                   formKey.currentState!.save();
-                                  print(signupData);
-                                  //recieve return from endpoint with charityID
-                                  //navigate to charity porfilepage with charityData as param
+                                  final encodedReq = jsonEncode({
+                                    "email_address": signupData["email"],
+                                    "password": signupData["password"],
+                                    "charity_name": signupData["name"],
+                                    "address": signupData["address"],
+                                    "charity_website": signupData["website"]
+                                  });
+                                  foodbankSignup(signupData) async {
+                                    try {
+                                      final response = await http.post(
+                                          Uri.parse(
+                                              'https://charity-project-hrmjjb.herokuapp.com/api/charities'),
+                                          headers: {
+                                            'Content-Type':
+                                                'application/json; charset=UTF-8',
+                                          },
+                                          body: encodedReq);
+                                      if (response.statusCode != 201) {
+                                        return ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBarError);
+                                      } else
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBarSucess);
+                                      Navigator.pushNamed(
+                                          context, '/food-bank');
+                                    } catch (error) {
+                                      print(error);
+                                    }
+                                  }
+
+                                  foodbankSignup(signupData);
                                 }
                               },
                               child: Text("Submit")))
