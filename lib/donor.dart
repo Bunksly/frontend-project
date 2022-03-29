@@ -113,7 +113,7 @@ class _DonorState extends State<Donor> {
             Expanded(
                 child: GoogleMap(
               initialCameraPosition: Donor._kInitialPosition,
-              mapType: MapType.hybrid,
+              mapType: MapType.normal,
               markers: _markers.values.toSet(),
               myLocationEnabled: false,
               onMapCreated: (controller) {
