@@ -43,6 +43,9 @@ dependencies:
   flutter_google_street_view: ^2.2.6
   flutter_login: ^3.2.0
   flutter_secure_storage: ^5.0.2
+  geocode: ^1.0.1
+  flutter_dotenv: ^4.0.0-nullsafety.0
+
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +75,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
 
   assets:
+    - .env
     - map_style.json
     - assets/donorimage.jpg
     - assets/foodbankimage.jpg
