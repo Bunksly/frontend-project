@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/user-profile-page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import './foodbankProfile.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Donor extends StatefulWidget {
   const Donor({Key? key}) : super(key: key);
@@ -20,38 +20,78 @@ class Donor extends StatefulWidget {
 }
 
 class _DonorState extends State<Donor> {
+  late GoogleMapController _googleMapController;
   final Map<String, Marker> _markers = {};
-  var foodBankList = [];
-  var url =
-      "https://www.givefood.org.uk/api/2/locations/search/?address=West%20One,%20100%20Wellington%20St,%20Leeds%20LS1%204LT";
+  late Marker currentPosMarker;
+  late double userlat;
+  late double userlng;
+  int dropdownValue = 5000;
+  late int range;
+  List foodBankList = [];
+  late String url;
   bool isSearching = false;
 
   void fetchFoodBanks(url) async {
-    final rawData = await get(Uri.parse(url));
-    final data = jsonDecode(rawData.body) as List;
-    setState(() {
-      foodBankList = data;
+    try {
+      final rawData = await get(Uri.parse(url));
+      final data = jsonDecode(rawData.body);
+      final output = data["charities"] as List;
       _markers.clear();
-      for (final foodbank in data) {
-        final splitted = foodbank["lat_lng"].split(',');
-        final lat = double.parse((splitted[0]));
-        assert(lat is double);
-        final lng = double.parse((splitted[1]));
-        assert(lng is double);
+      currentPosMarker = Marker(
+          markerId: MarkerId("current_position" + DateTime.now().toString()),
+          infoWindow: InfoWindow(title: 'Current Position'),
+          position: LatLng(userlat, userlng),
+          icon:
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure));
+      _markers["current_position" + DateTime.now().toString()] =
+          currentPosMarker;
+      for (final foodbank in output) {
+        final lat = foodbank["lat"];
+        final lng = foodbank["lng"];
         final marker = Marker(
-            markerId: MarkerId(foodbank["foodbank"]["name"]),
+            markerId: MarkerId(foodbank["charity_name"]),
             position: LatLng(lat, lng),
             infoWindow: InfoWindow(
-                title: foodbank["foodbank"]["name"],
-                snippet: foodbank["address"]));
-        _markers[foodbank["foodbank"]["name"]] = marker;
+                title: foodbank["charity_name"], snippet: foodbank["address"]));
+        _markers[foodbank["charity_name"]] = marker;
       }
-    });
+      setState(() {
+        foodBankList = output;
+      });
+    } catch (err) {
+      print(err);
+    }
+  }
+
+  getLatLng(value) async {
+    final geoUrl =
+        value.replaceAll(RegExp(r'([,\s]\s*)'), "%20") + "%20United%20Kingdom";
+    try {
+      final response = await get(Uri.parse(
+          "https://api.myptv.com/geocoding/v1/locations/by-text?searchText=${geoUrl}&apiKey=${env["PTVKEY"]}"));
+      final data = jsonDecode(response.body);
+      setState(() {
+        userlat = data["locations"][0]["referencePosition"]["latitude"];
+        userlng = data["locations"][0]["referencePosition"]["longitude"];
+        _googleMapController
+            .animateCamera(CameraUpdate.newLatLng(LatLng(userlat, userlng)));
+        url =
+            "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
+        fetchFoodBanks(url);
+      });
+    } catch (err) {
+      print(err);
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    userlat = 53.80754277823678;
+    userlng = -1.5484416213022532;
+    range = 5000;
+    url =
+        "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
     fetchFoodBanks(url);
   }
 
@@ -73,14 +113,45 @@ class _DonorState extends State<Donor> {
             Expanded(
                 child: GoogleMap(
               initialCameraPosition: Donor._kInitialPosition,
-              mapType: MapType.hybrid,
+              mapType: MapType.normal,
               markers: _markers.values.toSet(),
+              myLocationEnabled: false,
+              onMapCreated: (controller) {
+                _googleMapController = controller;
+              },
             )),
             Padding(
-                padding: EdgeInsets.fromLTRB(15, 5, 15, 0),
+                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
                 child: Row(children: [
-                  Expanded(child: DropdownSearch()),
-                  Expanded(child: DropdownSearch()),
+                  Expanded(
+                      child: DropdownSearch<int>(
+                          mode: Mode.MENU,
+                          items: [500, 1000, 2500, 5000],
+                          selectedItem: dropdownValue,
+                          label: "Search range(m)",
+                          showSearchBox: false,
+                          validator: (value) {
+                            if (value == null) return "Select Range";
+                            return null;
+                          },
+                          onChanged: (int? newValue) {
+                            setState(() {
+                              dropdownValue = newValue!;
+                              range = newValue;
+                              url =
+                                  "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
+                              fetchFoodBanks(url);
+                            });
+                          })),
+                  Expanded(
+                      child: TextFormField(
+                    onFieldSubmitted: (String value) {
+                      getLatLng(value);
+                    },
+                    decoration: InputDecoration(
+                        labelText: "Search by address",
+                        border: OutlineInputBorder()),
+                  )),
                 ])),
             Expanded(
                 child: Padding(
@@ -99,9 +170,8 @@ class _DonorState extends State<Donor> {
                                 )
                               }),
                           leading: Icon(Icons.food_bank),
-                          title: Text(foodBank["foodbank"]["name"]),
-                          trailing: Text(foodBank["distance_m"].toString() +
-                              " metres away"),
+                          title: Text(foodBank["charity_name"]),
+                          trailing: Text(foodBank["distance"].toString() + "m"),
                           subtitle: Text(foodBank["address"]),
                         ));
                       },
