@@ -1,7 +1,9 @@
 import 'dart:developer';
+import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/signup.dart';
+import 'package:http/http.dart' as http;
 
 class NewLogin extends StatefulWidget {
   const NewLogin({Key? key}) : super(key: key);
@@ -14,6 +16,8 @@ class _NewLoginState extends State<NewLogin> {
   final formKey = GlobalKey<FormState>();
 
   final Map loginData = {"email": null, "password": null};
+
+  bool? valueCheck = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +38,7 @@ class _NewLoginState extends State<NewLogin> {
                       blurRadius: 7,
                       offset: Offset(0, 3))
                 ]),
-            height: 300,
+            height: 350,
             width: 300,
             child: Form(
                 key: formKey,
@@ -94,19 +98,67 @@ class _NewLoginState extends State<NewLogin> {
                                 border: OutlineInputBorder(),
                               ),
                             )),
+                        Expanded(
+                          flex: 2,
+                          child: SizedBox(
+                              child: CheckboxListTile(
+                            title: const Text(
+                                'Tick here if you have a foodbank account:'),
+                            value: valueCheck,
+                            onChanged: (bool? value) {
+                              setState(() => valueCheck = value);
+                            },
+                          )),
+                        ),
                         Expanded(child: SizedBox()),
                         Expanded(
                             flex: 2,
                             child: ElevatedButton(
-                                onPressed: () {
-                                  final isValid =
-                                      formKey.currentState!.validate();
-                                  if (isValid) {
-                                    formKey.currentState!.save();
-                                    print(loginData);
+                              child: Text('Login'),
+                              onPressed: () {
+                                final snackBarSucess = SnackBar(
+                                    content: Text("Login sucessful!"),
+                                    backgroundColor: Color(0xff749C75));
+                                final snackBarError = SnackBar(
+                                    content:
+                                        Text("Login failed, please try again"),
+                                    backgroundColor: Color(0xffC17767));
+                                final isValid =
+                                    formKey.currentState!.validate();
+                                if (isValid && valueCheck!) {
+                                  formKey.currentState!.save();
+                                  final encodedReq = jsonEncode({
+                                    "email_address": loginData["email"],
+                                    "password": loginData["password"],
+                                  });
+                                  foodbankSignIn(loginData) async {
+                                    try {
+                                      final response = await http.post(
+                                          Uri.parse(
+                                              'https://charity-project-hrmjjb.herokuapp.com/api/charities/signin'),
+                                          headers: {
+                                            'Content-Type':
+                                                'application/json; charset=UTF-8',
+                                          },
+                                          body: encodedReq);
+                                      print(response.body);
+                                      if (response.statusCode != 202) {
+                                        return ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBarError);
+                                      } else
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBarSucess);
+                                      Navigator.pushNamed(
+                                          context, '/food-bank');
+                                    } catch (error) {
+                                      print(error);
+                                    }
                                   }
-                                },
-                                child: Text('Login'))),
+
+                                  foodbankSignIn(loginData);
+                                }
+                              },
+                            )),
                         Expanded(child: SizedBox()),
                         Expanded(
                             child: RichText(
