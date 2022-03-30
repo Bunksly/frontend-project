@@ -121,7 +121,8 @@ class _FoodBankPageState extends State<FoodBankPage> {
                                 MaterialPageRoute(
                                     builder: (context) => RequestPage(
                                         list: needList,
-                                        statefn: setParentState)));
+                                        statefn: setParentState,
+                                        userId: userId)));
                           },
                           child: Text("Request Items")),
                       ElevatedButton(
@@ -157,6 +158,7 @@ class _FoodBankPageState extends State<FoodBankPage> {
                   child: ListView.builder(
                       itemCount: needList.length,
                       itemBuilder: (context, i) {
+                        print(needList[i]);
                         return Card(
                             child: ListTile(
                           leading: urgentIcon(needList[i]["urgent"]),
