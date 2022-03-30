@@ -6,14 +6,15 @@ class PledgedItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(data);
     return Scaffold(
         appBar: AppBar(title: Text("Pledged Items")),
         body: ListView.builder(
             itemCount: data.length,
             itemBuilder: (BuildContext context, i) {
               final pledge = data[i];
-              return Text("cahrity" +
-                  ": " +
+              return Text(pledge["charity_name"] +
+                  ":  " +
                   pledge["item_name"] +
                   "(${pledge["quantity_available"]})");
             }));
