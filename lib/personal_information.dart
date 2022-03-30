@@ -15,7 +15,7 @@ class PersonalInfo extends StatelessWidget {
                 child: Container(
                     padding: EdgeInsets.all(15),
                     width: 300,
-                    height: 500,
+                    height: 400,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(10),
@@ -43,7 +43,7 @@ class PersonalInfo extends StatelessWidget {
                             flex: 2,
                             child: ListTile(
                                 leading: Icon(Icons.account_box),
-                                title: Text(data["name"]))),
+                                title: Text(data["username"]))),
                         Expanded(
                             flex: 2,
                             child: ListTile(
@@ -59,11 +59,11 @@ class PersonalInfo extends StatelessWidget {
                             child: ListTile(
                                 leading: Icon(Icons.house),
                                 title: Text(data["address"]))),
-                        Expanded(
-                            flex: 2,
-                            child: ListTile(
-                                leading: Icon(Icons.phone),
-                                title: Text(data["number"]))),
+                        // Expanded(
+                        //     flex: 2,
+                        //     child: ListTile(
+                        //         leading: Icon(Icons.phone),
+                        //         title: Text(data["number"]))),
                         Expanded(
                             child: ElevatedButton(
                                 onPressed: () {

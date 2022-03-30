@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PledgedItems extends StatelessWidget {
-  final Map data;
+  final List data;
   const PledgedItems({Key? key, required this.data}) : super(key: key);
 
   @override
@@ -9,13 +9,13 @@ class PledgedItems extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(title: Text("Pledged Items")),
         body: ListView.builder(
-            itemCount: data["pledges"].length,
+            itemCount: data.length,
             itemBuilder: (BuildContext context, i) {
-              final pledge = data["pledges"][i];
-              return Text(pledge["charity"] +
+              final pledge = data[i];
+              return Text("cahrity" +
                   ": " +
-                  pledge["item"] +
-                  "(${pledge["amount"]})");
+                  pledge["item_name"] +
+                  "(${pledge["quantity_available"]})");
             }));
   }
 }

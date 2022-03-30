@@ -120,8 +120,10 @@ class _DonorState extends State<Donor> {
   }
 
   Future getUserInfo() async {
-    final rawData = await get(Uri.parse(
-        "https://charity-project-hrmjjb.herokuapp.com/api/donors/${userId}"));
+    final rawData = await get(
+        Uri.parse(
+            "https://charity-project-hrmjjb.herokuapp.com/api/donors/${userId}"),
+        headers: {"x-access-token": accessToken.toString()});
     final data = jsonDecode(rawData.body);
     print(data);
     setState(() {
@@ -202,8 +204,8 @@ class _DonorState extends State<Donor> {
                           onTap: (() => {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          DetailedFoodBank(data: foodBank)),
+                                      builder: (context) => DetailedFoodBank(
+                                          data: foodBank, userId: userId)),
                                 )
                               }),
                           leading: Icon(Icons.food_bank),
