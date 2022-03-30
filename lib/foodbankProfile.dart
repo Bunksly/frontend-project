@@ -20,6 +20,7 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
   double lat = 0;
   double lng = 0;
   List needsList = [];
+  List donationsList = [];
 
   // final needsString = "Unknown";
   //   final needsList = [];
@@ -29,10 +30,10 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
   //   final lng = widget.data["lng"];
   //   assert(lng is double);
 
-  void fetchNeeds(id) async {
+  Future fetchNeeds() async {
     try {
       final rawData = await get(Uri.parse(
-          "https://charity-project-hrmjjb.herokuapp.com/api/${id}/requirements"));
+          "https://charity-project-hrmjjb.herokuapp.com/api/${widget.data["charity_id"]}/requirements"));
       final encodedData = jsonDecode(rawData.body);
       final output = encodedData["charityRequirements"] as List;
       setState(() {
@@ -43,13 +44,37 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
     }
   }
 
+  Future fetchPledges() async {
+    final rawData = await get(Uri.parse(
+        "https://charity-project-hrmjjb.herokuapp.com/api/${widget.userId}/donations"));
+    final data = jsonDecode(rawData.body);
+    final output = data["donatorDonations"] as List;
+    setState(() {
+      donationsList = output;
+    });
+  }
+
+  void startUp() async {
+    await fetchNeeds();
+    await fetchPledges();
+    setState(() {
+      for (final x in needsList) {
+        for (final y in donationsList) {
+          if (y["charity_id"] == x["charity_id"] &&
+              y["item_id"] == x["item_id"]) {
+            x["quantity_required"] -= y["quantity_available"];
+          }
+        }
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    charityID = widget.data["charity_id"];
     lat = widget.data["lat"];
     lng = widget.data["lng"];
-    fetchNeeds(charityID);
+    startUp();
   }
 
   @override
@@ -108,13 +133,20 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
                     ),
                     trailing: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PledgeForm(
-                                      need: need,
-                                      data: widget.data,
-                                      userId: widget.userId)));
+                          if (need["quantity_required"] == 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                backgroundColor: Colors.amber,
+                                content: Text("Maximum amount already pledged",
+                                    style: TextStyle(color: Colors.black))));
+                          } else {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PledgeForm(
+                                        need: need,
+                                        data: widget.data,
+                                        userId: widget.userId)));
+                          }
                         },
                         child: Text("Pledge!")),
                   );

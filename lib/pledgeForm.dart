@@ -71,7 +71,8 @@ class PledgeForm extends StatelessWidget {
                                     final encodedreq = jsonEncode({
                                       "category_name": need["category_name"],
                                       "item_id": need["item_id"],
-                                      "quantity_available": amount
+                                      "quantity_available": amount,
+                                      "charity_id": data["charity_id"]
                                     });
                                     print(data);
                                     final rawData = await post(
@@ -89,6 +90,8 @@ class PledgeForm extends StatelessWidget {
                                             backgroundColor: Colors.green,
                                             content: Text(
                                                 "${amount} ${need["item_name"]} pledged succsefully")));
+                                    Navigator.pop(context);
+                                    Navigator.pushNamed(context, '/donor');
                                   },
                                 )),
                             Expanded(child: SizedBox()),

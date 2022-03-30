@@ -155,19 +155,22 @@ class _NewLoginState extends State<NewLogin> {
                                           },
                                           body: encodedReq);
                                       final data = jsonDecode(response.body);
-                                      await setAccessToken(data["accessToken"]);
-                                      await setUserId(data["charity_id"]);
+
                                       print(data["accessToken"]);
                                       // await Future.delayed(
                                       //     const Duration(seconds: 2), () {});
                                       if (response.statusCode != 202) {
                                         return ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarError);
-                                      } else
+                                      } else {
+                                        await setAccessToken(
+                                            data["accessToken"]);
+                                        await setUserId(data["charity_id"]);
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarSucess);
-                                      Navigator.pushNamed(
-                                          context, '/food-bank');
+                                        Navigator.pushNamed(
+                                            context, '/food-bank');
+                                      }
                                     } catch (error) {
                                       print(error);
                                     }
@@ -192,17 +195,20 @@ class _NewLoginState extends State<NewLogin> {
                                           body: encodedReq);
                                       final data = jsonDecode(response.body);
                                       print(data["accessToken"]);
-                                      await setAccessToken(data["accessToken"]);
-                                      await setUserId(data["donator_id"]);
+
                                       // await Future.delayed(
                                       //     const Duration(seconds: 2), () {});
                                       if (response.statusCode != 202) {
                                         return ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarError);
-                                      } else
+                                      } else {
+                                        await setAccessToken(
+                                            data["accessToken"]);
+                                        await setUserId(data["donator_id"]);
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarSucess);
-                                      Navigator.pushNamed(context, '/donor');
+                                        Navigator.pushNamed(context, '/donor');
+                                      }
                                     } catch (error) {
                                       print(error);
                                     }
