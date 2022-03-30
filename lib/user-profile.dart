@@ -16,6 +16,7 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   late String? userId;
   late String? accessToken;
+  late List pledges;
 
   late Map userData = {
     "username": "",
@@ -40,8 +41,12 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future getUserInfo() async {
-    final rawData = await get(Uri.parse(
-        "https://charity-project-hrmjjb.herokuapp.com/api/donors/${userId}"));
+    final rawData = await get(
+        Uri.parse(
+            "https://charity-project-hrmjjb.herokuapp.com/api/donors/${userId}"),
+        headers: {
+          "x-access-token": accessToken.toString(),
+        });
     final data = jsonDecode(rawData.body);
     print(data);
     setState(() {
@@ -55,8 +60,10 @@ class _UserProfileState extends State<UserProfile> {
     final rawData = await get(Uri.parse(
         "https://charity-project-hrmjjb.herokuapp.com/api/${userId}/donations"));
     final data = jsonDecode(rawData.body);
-    print(data);
-    setState(() {});
+    final pledgedata = data["donatorDonations"] as List;
+    setState(() {
+      pledges = pledgedata;
+    });
   }
 
   @override
@@ -119,7 +126,7 @@ class _UserProfileState extends State<UserProfile> {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          PledgedItems(data: userData)),
+                                          PledgedItems(data: pledges)),
                                 )
                               })),
                   Card(

@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 class PledgeForm extends StatelessWidget {
   final Map need;
+  final Map data;
+  final String? userId;
   final formKey = GlobalKey<FormState>();
-  PledgeForm({Key? key, required this.need}) : super(key: key);
+  PledgeForm(
+      {Key? key, required this.need, required this.data, required this.userId})
+      : super(key: key);
+  late int pledgeAmount;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +32,7 @@ class PledgeForm extends StatelessWidget {
                           blurRadius: 7,
                           offset: Offset(0, 3))
                     ]),
-                height: 250,
+                height: 200,
                 width: 300,
                 child: Form(
                     key: formKey,
@@ -33,35 +40,69 @@ class PledgeForm extends StatelessWidget {
                         padding: EdgeInsets.all(15),
                         child: Column(
                           children: [
-                            Expanded(child: SizedBox()),
                             Expanded(
+                                flex: 2,
                                 child: Text(
                                     "How many ${need["item_name"]}s would you like to pledge?",
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                             Expanded(
+                                flex: 2,
                                 child: TextFormField(
-                              decoration: const InputDecoration(
-                                icon: Icon(Icons.add_box),
-                                labelText: "Amount",
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: ((String? value) {
-                                if (value == null) {
-                                  return "Enter the amount";
-                                } else if (int.parse(value) >
-                                    need["quantity_required"]) {
-                                  return "We only need ${need["quantity_required"]}";
-                                } else {
-                                  return null;
-                                }
-                              }),
-                            )),
-                            Expanded(
-                                child: ElevatedButton(
+                                  decoration: const InputDecoration(
+                                    icon: Icon(Icons.add_box),
+                                    labelText: "Amount",
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  validator: ((String? value) {
+                                    print(value);
+                                    if (value == null || value.length == 0) {
+                                      return "Enter the amount";
+                                    } else if (int.parse(value) >
+                                        need["quantity_required"]) {
+                                      return "We only need ${need["quantity_required"]}";
+                                    } else {
+                                      return null;
+                                    }
+                                  }),
+                                  onSaved: (value) async {
+                                    print(need["category_name"]);
+                                    final amount = int.parse(value.toString());
+                                    final encodedreq = jsonEncode({
+                                      "category_name": need["category_name"],
+                                      "item_id": need["item_id"],
+                                      "quantity_available": amount
+                                    });
+                                    print(data);
+                                    final rawData = await post(
+                                        Uri.parse(
+                                            "https://charity-project-hrmjjb.herokuapp.com/api/${userId}/donations"),
+                                        headers: {
+                                          'Content-Type':
+                                              'application/json; charset=UTF-8',
+                                        },
+                                        body: encodedreq);
+                                    final response = jsonDecode(rawData.body);
+                                    print(response);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            backgroundColor: Colors.green,
+                                            content: Text(
+                                                "${amount} ${need["item_name"]} pledged succsefully")));
+                                  },
+                                )),
+                            Expanded(child: SizedBox()),
+                            ElevatedButton(
                               child: Text("Pledge now"),
-                              onPressed: () {},
-                            ))
+                              onPressed: () {
+                                final isValid =
+                                    formKey.currentState!.validate();
+
+                                if (isValid) {
+                                  formKey.currentState!.save();
+                                }
+                              },
+                            )
                           ],
                         ))))));
   }

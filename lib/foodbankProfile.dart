@@ -7,7 +7,9 @@ import 'package:frontend/pledgeForm.dart';
 
 class DetailedFoodBank extends StatefulWidget {
   final Map data;
-  const DetailedFoodBank({Key? key, required this.data}) : super(key: key);
+  final String? userId;
+  const DetailedFoodBank({Key? key, required this.data, required this.userId})
+      : super(key: key);
 
   @override
   State<DetailedFoodBank> createState() => _DetailedFoodBankState();
@@ -109,8 +111,10 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      PledgeForm(need: need)));
+                                  builder: (context) => PledgeForm(
+                                      need: need,
+                                      data: widget.data,
+                                      userId: widget.userId)));
                         },
                         child: Text("Pledge!")),
                   );
