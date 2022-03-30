@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/request_page.dart';
 import 'package:frontend/secure-storage.dart';
 import 'package:frontend/manage_pledged_items.dart';
+import 'package:http/http.dart';
 
 class FoodBankPage extends StatefulWidget {
   const FoodBankPage({Key? key}) : super(key: key);
@@ -13,23 +16,13 @@ class FoodBankPage extends StatefulWidget {
 class _FoodBankPageState extends State<FoodBankPage> {
   late String? userId;
   late String? accessToken;
-  List<Map> needList = [
-    {
-      "itemName": "pasta",
-      "quantityRequired": 50,
-      "categoryName": "food",
-      "isUrgent": true
-    }
-  ];
+  List needList = [];
 
-  final Map charity = {
-    "charity_id": 1,
-    "charity_name": "Charity 1d",
-    "charity_image":
-        "https://leedsnorthandwest.foodbank.org.uk/wp-content/uploads/sites/124/2016/04/Leeds-North-and-West-Three-Colour-logo.png",
-    "address": "1 charity road,\n location1,\n A666AA",
-    "charity_website": "testcharitywebsite1d",
-    "email_address": "testEmail1d"
+  Map charity = {
+    "charity_name": "",
+    "address": "",
+    "charity_website": "",
+    "email_address": ""
   };
 
   Icon urgentIcon(input) {
@@ -50,7 +43,7 @@ class _FoodBankPageState extends State<FoodBankPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    init();
+    startUp();
   }
 
   Future init() async {
@@ -61,6 +54,34 @@ class _FoodBankPageState extends State<FoodBankPage> {
       accessToken = getToken;
       print(userId);
       print(accessToken);
+    });
+  }
+
+  Future startUp() async {
+    await init();
+    await getFoodbank();
+    //await Future.delayed(const Duration(seconds: 2), () {});
+    await getRequirements();
+  }
+
+  Future getFoodbank() async {
+    final rawData = await get(Uri.parse(
+        "https://charity-project-hrmjjb.herokuapp.com/api/charities/${userId}"));
+    final data = jsonDecode(rawData.body);
+    setState(() {
+      charity["charity_name"] = data["charity"]["charity_name"];
+      charity["address"] = data["charity"]["address"];
+      charity["charity_website"] = data["charity"]["charity_website"];
+      charity["email_address"] = data["charity"]["email_address"];
+    });
+  }
+
+  Future getRequirements() async {
+    final rawData = await get(Uri.parse(
+        "https://charity-project-hrmjjb.herokuapp.com/api/${userId}/requirements"));
+    final data = jsonDecode(rawData.body);
+    setState(() {
+      needList = data["charityRequirements"];
     });
   }
 
@@ -75,7 +96,7 @@ class _FoodBankPageState extends State<FoodBankPage> {
                 flex: 6,
                 child: Column(children: [
                   Image.network(
-                    charity["charity_image"],
+                    "https://gravatar.com/avatar/67fbbf18af4bdbbbc55f1900b9698cce?s=200&d=robohash&r=x",
                     height: 100,
                   ),
                   ListTile(
@@ -137,10 +158,10 @@ class _FoodBankPageState extends State<FoodBankPage> {
                       itemBuilder: (context, i) {
                         return Card(
                             child: ListTile(
-                          leading: urgentIcon(needList[i]["isUrgent"]),
-                          title: Text(needList[i]["itemName"] +
-                              "(${needList[i]["quantityRequired"].toString()})"),
-                          trailing: Text(needList[i]["categoryName"]),
+                          leading: urgentIcon(needList[i]["urgent"]),
+                          title: Text(needList[i]["item_name"] +
+                              "(${needList[i]["quantity_required"].toString()})"),
+                          trailing: Text(needList[i]["category_name"]),
                           //  trailing:
                         ));
                       }))

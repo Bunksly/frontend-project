@@ -3,7 +3,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 
 class RequestPage extends StatelessWidget {
   static final String title = "Item Request Page";
-  final List<Map> list;
+  final List list;
   final Function statefn;
   const RequestPage({Key? key, required this.list, required this.statefn})
       : super(key: key);
@@ -24,7 +24,7 @@ class RequestPage extends StatelessWidget {
 }
 
 class MainPage extends StatefulWidget {
-  final List<Map> list;
+  final List list;
   final Function statefn;
   const MainPage({Key? key, required this.list, required this.statefn});
 
@@ -45,7 +45,7 @@ class _MainPageState extends State<MainPage> {
     "toiletries": ["soap", "toothpaste", "toilet paper"]
   };
 
-  String? itemName = null;
+  String? itemName = '';
   int? quantityRequired = 0;
   String? categoryName = '';
   bool? isUrgent = false;
@@ -69,52 +69,59 @@ class _MainPageState extends State<MainPage> {
       padding: EdgeInsets.all(15),
       child: Column(children: [
         Expanded(
-            flex: 3,
+            flex: 4,
             child: Form(
               key: formKey,
               //autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 children: [
-                  buildCategory(),
-                  const SizedBox(height: 16),
-                  buildItemName(),
-                  const SizedBox(height: 16),
-                  buildQuantityRequired(),
-                  const SizedBox(height: 16),
-                  buildIsUrgent(),
-                  const SizedBox(height: 16),
+                  Expanded(
+                    child: buildCategory(),
+                  ),
+                  Expanded(
+                    child: buildItemName(),
+                  ),
+                  Expanded(
+                    child: buildQuantityRequired(),
+                  ),
+                  Expanded(
+                    child: buildIsUrgent(),
+                  ),
                   buildSubmit(),
                 ],
               ),
             )),
-        Row(
-          children: const [
-            Expanded(
-                flex: 3,
-                child: Text("Urgent?",
-                    style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(
-                flex: 12,
-                child: Text("Item Name(Amount needed)",
-                    style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(
-                flex: 3,
-                child: Text("Delete",
-                    style: TextStyle(fontWeight: FontWeight.bold)))
-          ],
+        Expanded(
+          flex: 1,
+          child: Row(
+            children: const [
+              Expanded(
+                  flex: 3,
+                  child: Text("Urgent?",
+                      style: TextStyle(fontWeight: FontWeight.bold))),
+              Expanded(
+                  flex: 12,
+                  child: Text("Item Name(Amount needed)",
+                      style: TextStyle(fontWeight: FontWeight.bold))),
+              Expanded(
+                  flex: 3,
+                  child: Text("Delete",
+                      style: TextStyle(fontWeight: FontWeight.bold)))
+            ],
+          ),
         ),
         Expanded(
-          flex: 2,
+          flex: 3,
           child: ListView.builder(
               itemCount: widget.list.length,
               itemBuilder: (context, i) {
                 return Card(
                     child: ListTile(
-                        leading: urgentIcon(widget.list[i]["isUrgent"]),
-                        title: Text(widget.list[i]["itemName"] +
-                            "(${widget.list[i]["quantityRequired"].toString()})"),
-                        subtitle:
-                            Text("Category: " + widget.list[i]["categoryName"]),
+                        leading: urgentIcon(widget.list[i]["urgent"]),
+                        title: Text(widget.list[i]["item_name"] +
+                            "(${widget.list[i]["quantity_required"].toString()})"),
+                        subtitle: Text(
+                            "Category: " + widget.list[i]["category_name"]),
                         trailing: SizedBox(
                           height: 25,
                           child: FloatingActionButton.small(
@@ -124,10 +131,9 @@ class _MainPageState extends State<MainPage> {
                               onPressed: () {
                                 setState(() {
                                   widget.list.removeWhere((e) =>
-                                      e["itemName"] ==
-                                          widget.list[i]["itemName"] &&
-                                      e["isUrgent"] ==
-                                          widget.list[i]["isUrgent"]);
+                                      e["item_name"] ==
+                                          widget.list[i]["item_name"] &&
+                                      e["urgent"] == widget.list[i]["urgent"]);
                                   widget.statefn(widget.list);
                                 });
                               }),
@@ -216,20 +222,20 @@ class _MainPageState extends State<MainPage> {
               formKey.currentState!.save();
 
               Map output = {
-                "itemName": itemName,
-                "quantityRequired": quantityRequired,
-                "categoryName": categoryName,
-                "isUrgent": isUrgent
+                "item_name": itemName,
+                "quantity_required": quantityRequired,
+                "category_name": categoryName,
+                "urgent": isUrgent
               };
 
               void duplicateAdder() {
                 bool didAdd = false;
                 for (final x in widget.list) {
-                  String outputItemName = output["itemName"];
-                  String xItemName = x["itemName"];
+                  String outputItemName = output["item_name"];
+                  String xItemName = x["item_name"];
                   if (xItemName == outputItemName &&
-                      x["isUrgent"] == output["isUrgent"]) {
-                    x["quantityRequired"] += output["quantityRequired"];
+                      x["urgent"] == output["urgent"]) {
+                    x["quantity_required"] += output["quantity_required"];
                     didAdd = true;
                     break;
                   }
