@@ -32,10 +32,18 @@ class _DonorState extends State<Donor> {
   late int range;
   List foodBankList = [];
   late String url;
-  bool isSearching = false;
+  bool isSearching = true;
 
-  void fetchFoodBanks(url) async {
+  Future startUp() async {
     await init();
+    await getUserInfo();
+    await Future.delayed(const Duration(seconds: 2), () {});
+    _googleMapController
+        .animateCamera(CameraUpdate.newLatLng(LatLng(userlat, userlng)));
+    fetchFoodBanks();
+  }
+
+  void fetchFoodBanks() async {
     print(userId);
     print(accessToken);
     try {
@@ -63,6 +71,7 @@ class _DonorState extends State<Donor> {
       }
       setState(() {
         foodBankList = output;
+        isSearching = false;
       });
     } catch (err) {
       print(err);
@@ -83,7 +92,7 @@ class _DonorState extends State<Donor> {
             .animateCamera(CameraUpdate.newLatLng(LatLng(userlat, userlng)));
         url =
             "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
-        fetchFoodBanks(url);
+        fetchFoodBanks();
       });
     } catch (err) {
       print(err);
@@ -98,7 +107,7 @@ class _DonorState extends State<Donor> {
     range = 5000;
     url =
         "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
-    fetchFoodBanks(url);
+    startUp();
   }
 
   Future init() async {
@@ -107,6 +116,19 @@ class _DonorState extends State<Donor> {
     setState(() {
       userId = getId;
       accessToken = getToken;
+    });
+  }
+
+  Future getUserInfo() async {
+    final rawData = await get(Uri.parse(
+        "https://charity-project-hrmjjb.herokuapp.com/api/donors/${userId}"));
+    final data = jsonDecode(rawData.body);
+    print(data);
+    setState(() {
+      userlat = data["donor"]["lat"];
+      userlng = data["donor"]["lng"];
+      url =
+          "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
     });
   }
 
@@ -155,12 +177,14 @@ class _DonorState extends State<Donor> {
                               range = newValue;
                               url =
                                   "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
-                              fetchFoodBanks(url);
+                              fetchFoodBanks();
                             });
                           })),
                   Expanded(
                       child: TextFormField(
-                    onFieldSubmitted: (String value) {},
+                    onFieldSubmitted: (String value) {
+                      getLatLng(value);
+                    },
                     decoration: InputDecoration(
                         labelText: "Search by address",
                         border: OutlineInputBorder()),

@@ -212,7 +212,7 @@ class _DonorSignUpState extends State<DonorSignUp> {
                                       } else
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarSucess);
-                                      Navigator.pushNamed(context, '/donor');
+                                      Navigator.pushNamed(context, '/login');
                                     } catch (error) {
                                       print(error);
                                     }
