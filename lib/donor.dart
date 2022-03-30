@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/secure-storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import './foodbankProfile.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Donor extends StatefulWidget {
-  final int userId;
-  const Donor({Key? key, required this.userId}) : super(key: key);
+  const Donor({Key? key}) : super(key: key);
 
   static final LatLng _kMapCenter =
       LatLng(53.80754277823678, -1.5484416213022532);
@@ -21,6 +21,8 @@ class Donor extends StatefulWidget {
 }
 
 class _DonorState extends State<Donor> {
+  late String? userId;
+  late String? accessToken;
   late GoogleMapController _googleMapController;
   final Map<String, Marker> _markers = {};
   late Marker currentPosMarker;
@@ -33,6 +35,9 @@ class _DonorState extends State<Donor> {
   bool isSearching = false;
 
   void fetchFoodBanks(url) async {
+    await init();
+    print(userId);
+    print(accessToken);
     try {
       final rawData = await get(Uri.parse(url));
       final data = jsonDecode(rawData.body);
@@ -96,6 +101,15 @@ class _DonorState extends State<Donor> {
     fetchFoodBanks(url);
   }
 
+  Future init() async {
+    final getToken = await UserSecureStorage.getAccessToken();
+    final getId = await UserSecureStorage.getUserId();
+    setState(() {
+      userId = getId;
+      accessToken = getToken;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,9 +160,7 @@ class _DonorState extends State<Donor> {
                           })),
                   Expanded(
                       child: TextFormField(
-                    onFieldSubmitted: (String value) {
-                      getLatLng(value);
-                    },
+                    onFieldSubmitted: (String value) {},
                     decoration: InputDecoration(
                         labelText: "Search by address",
                         border: OutlineInputBorder()),

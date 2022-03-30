@@ -3,12 +3,10 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/donor.dart';
+import 'package:frontend/secure-storage.dart';
 import 'package:frontend/signup.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/profile_page.dart';
-
-final storage = FlutterSecureStorage();
 
 class NewLogin extends StatefulWidget {
   const NewLogin({Key? key}) : super(key: key);
@@ -24,8 +22,13 @@ class _NewLoginState extends State<NewLogin> {
 
   bool? valueCheck = false;
 
-  void writeToStorage(response) async {
-    await storage.write(key: response["donator_id"], value: response);
+  Future setAccessToken(value) async {
+    await UserSecureStorage.setAccessToken(value);
+  }
+
+  Future setUserId(value) async {
+    final output = value.toString();
+    await UserSecureStorage.setUserId(output);
   }
 
   @override
@@ -152,19 +155,19 @@ class _NewLoginState extends State<NewLogin> {
                                           },
                                           body: encodedReq);
                                       final data = jsonDecode(response.body);
+                                      await setAccessToken(data["accessToken"]);
+                                      await setUserId(data["charity_id"]);
+                                      print(data["accessToken"]);
+                                      // await Future.delayed(
+                                      //     const Duration(seconds: 2), () {});
                                       if (response.statusCode != 202) {
                                         return ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarError);
                                       } else
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarSucess);
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  FoodBankPage(
-                                                      userId:
-                                                          data["charity_id"])));
+                                      Navigator.pushNamed(
+                                          context, '/food-bank');
                                     } catch (error) {
                                       print(error);
                                     }
@@ -188,17 +191,18 @@ class _NewLoginState extends State<NewLogin> {
                                           },
                                           body: encodedReq);
                                       final data = jsonDecode(response.body);
+                                      print(data["accessToken"]);
+                                      await setAccessToken(data["accessToken"]);
+                                      await setUserId(data["donator_id"]);
+                                      // await Future.delayed(
+                                      //     const Duration(seconds: 2), () {});
                                       if (response.statusCode != 202) {
                                         return ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarError);
                                       } else
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarSucess);
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => Donor(
-                                                  userId: data["donator_id"])));
+                                      Navigator.pushNamed(context, '/donor');
                                     } catch (error) {
                                       print(error);
                                     }
