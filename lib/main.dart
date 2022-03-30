@@ -56,12 +56,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/': (context) => Home(),
-        '/donor': (context) => Donor(
-              userId: 123,
-            ),
-        '/food-bank': (context) => FoodBankPage(
-              userId: 123,
-            ),
+        '/donor': (context) => Donor(),
+        '/food-bank': (context) => FoodBankPage(),
         '/profile': (context) => UserProfile(),
         '/login': ((context) => NewLogin()),
         '/signup': ((context) => SignUp())

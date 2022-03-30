@@ -22,8 +22,13 @@ class _NewLoginState extends State<NewLogin> {
 
   bool? valueCheck = false;
 
-  void setAccessToken(value) async {
+  Future setAccessToken(value) async {
     await UserSecureStorage.setAccessToken(value);
+  }
+
+  Future setUserId(value) async {
+    final output = value.toString();
+    await UserSecureStorage.setUserId(output);
   }
 
   @override
@@ -150,20 +155,19 @@ class _NewLoginState extends State<NewLogin> {
                                           },
                                           body: encodedReq);
                                       final data = jsonDecode(response.body);
-                                      setAccessToken(data["accessToken"]);
+                                      await setAccessToken(data["accessToken"]);
+                                      await setUserId(data["charity_id"]);
+                                      print(data["accessToken"]);
+                                      // await Future.delayed(
+                                      //     const Duration(seconds: 2), () {});
                                       if (response.statusCode != 202) {
                                         return ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarError);
                                       } else
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarSucess);
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  FoodBankPage(
-                                                      userId:
-                                                          data["charity_id"])));
+                                      Navigator.pushNamed(
+                                          context, '/food-bank');
                                     } catch (error) {
                                       print(error);
                                     }
@@ -187,18 +191,18 @@ class _NewLoginState extends State<NewLogin> {
                                           },
                                           body: encodedReq);
                                       final data = jsonDecode(response.body);
-                                      setAccessToken(data["accessToken"]);
+                                      print(data["accessToken"]);
+                                      await setAccessToken(data["accessToken"]);
+                                      await setUserId(data["donator_id"]);
+                                      // await Future.delayed(
+                                      //     const Duration(seconds: 2), () {});
                                       if (response.statusCode != 202) {
                                         return ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarError);
                                       } else
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarSucess);
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => Donor(
-                                                  userId: data["donator_id"])));
+                                      Navigator.pushNamed(context, '/donor');
                                     } catch (error) {
                                       print(error);
                                     }

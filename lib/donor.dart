@@ -8,8 +8,7 @@ import './foodbankProfile.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Donor extends StatefulWidget {
-  final int userId;
-  const Donor({Key? key, required this.userId}) : super(key: key);
+  const Donor({Key? key}) : super(key: key);
 
   static final LatLng _kMapCenter =
       LatLng(53.80754277823678, -1.5484416213022532);
@@ -22,6 +21,7 @@ class Donor extends StatefulWidget {
 }
 
 class _DonorState extends State<Donor> {
+  late String? userId;
   late String? accessToken;
   late GoogleMapController _googleMapController;
   final Map<String, Marker> _markers = {};
@@ -35,6 +35,9 @@ class _DonorState extends State<Donor> {
   bool isSearching = false;
 
   void fetchFoodBanks(url) async {
+    await init();
+    print(userId);
+    print(accessToken);
     try {
       final rawData = await get(Uri.parse(url));
       final data = jsonDecode(rawData.body);
@@ -96,15 +99,14 @@ class _DonorState extends State<Donor> {
     url =
         "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
     fetchFoodBanks(url);
-    print(widget.userId);
-    init();
   }
 
   Future init() async {
     final getToken = await UserSecureStorage.getAccessToken();
+    final getId = await UserSecureStorage.getUserId();
     setState(() {
+      userId = getId;
       accessToken = getToken;
-      print(accessToken);
     });
   }
 
@@ -158,9 +160,7 @@ class _DonorState extends State<Donor> {
                           })),
                   Expanded(
                       child: TextFormField(
-                    onFieldSubmitted: (String value) {
-                      getLatLng(value);
-                    },
+                    onFieldSubmitted: (String value) {},
                     decoration: InputDecoration(
                         labelText: "Search by address",
                         border: OutlineInputBorder()),
