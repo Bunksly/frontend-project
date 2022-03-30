@@ -129,7 +129,8 @@ class _FoodBankPageState extends State<FoodBankPage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ManagePledges()));
+                                    builder: (context) =>
+                                        ManagePledges(userId: userId)));
                           },
                           child: Text("Items pledged"))
                     ],

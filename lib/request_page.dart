@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'dart:convert';
+import 'package:http/http.dart';
 
 class RequestPage extends StatelessWidget {
   static final String title = "Item Request Page";
@@ -37,7 +39,7 @@ class _MainPageState extends State<MainPage> {
 
   String dropdownValue = 'food';
 
-  final categoryList = ["food", "clothes", "toiletries"];
+  List<String>? categoryList = [];
 
   final Map itemMap = {
     "food": ["pasta", "bread", "bananas"],
@@ -58,10 +60,27 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+  void getCategories() async {
+    final rawData = await get(Uri.parse(
+        "https://charity-project-hrmjjb.herokuapp.com/api/categories"));
+    final data = jsonDecode(rawData.body);
+    final output = data["categories"] as List;
+    final mappedOutput = output.map(
+      (e) {
+        return e["category_name"];
+      },
+    ).toList();
+
+    setState(() {
+      categoryList = mappedOutput.cast<String>();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     categoryName = "food";
+    getCategories();
   }
 
   @override
@@ -153,7 +172,9 @@ class _MainPageState extends State<MainPage> {
         if (value == null) return "Select Category";
         return null;
       },
-      onChanged: (String? newValue) {
+      onChanged: (String? newValue) async {
+        final rawData = await get(Uri.parse(
+            "https://charity-project-hrmjjb.herokuapp.com/api/items/"));
         setState(() {
           dropdownValue = newValue!;
           categoryName = newValue;
