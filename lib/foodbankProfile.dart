@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_street_view/flutter_google_street_view.dart';
 import 'package:http/http.dart';
+import 'package:frontend/pledgeForm.dart';
 
 class DetailedFoodBank extends StatefulWidget {
   final Map data;
@@ -96,11 +97,22 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
                   final need = needsList[i];
                   return ListTile(
                     leading: Text(need["category_name"]),
-                    title: Text(need["item_id"].toString()),
-                    subtitle:
-                        Text("amount " + need["quantity_required"].toString()),
+                    title: Center(
+                      child: Text(need["item_name"]),
+                    ),
+                    subtitle: Center(
+                      child: Text(
+                          "amount " + need["quantity_required"].toString()),
+                    ),
                     trailing: ElevatedButton(
-                        onPressed: () {}, child: Text("Pledge!")),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      PledgeForm(need: need)));
+                        },
+                        child: Text("Pledge!")),
                   );
                 }),
           )

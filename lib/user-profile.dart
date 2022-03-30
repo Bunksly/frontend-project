@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend/karma.dart';
 import 'package:frontend/personal_information.dart';
 import 'package:frontend/pledged_items.dart';
+import 'package:frontend/secure-storage.dart';
+import 'dart:convert';
+import 'package:http/http.dart';
 
 class UserProfile extends StatefulWidget {
   const UserProfile({Key? key}) : super(key: key);
@@ -11,19 +14,58 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-  final Map userData = {
-    'name': 'Notorious P.I.N.G.U',
-    'image':
-        'https://images.unsplash.com/photo-1598439119086-35655b8c333d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80',
-    'address': 'Industrial freezer, Manningham, Bradford',
-    'number': '07898898898',
-    'email': 'test@testmail.co.uk',
-    'karma': '150',
-    'pledges': [
-      {"charity": "Leeds Foodbank", "item": "Bottles of Milk", "amount": "50"},
-      {"charity": "Charitable Cause", "item": "Bags of Pasta", "amount": "200"},
-    ]
+  late String? userId;
+  late String? accessToken;
+
+  late Map userData = {
+    "username": "",
+    "address": "",
+    "email": "",
   };
+
+  Future startUp() async {
+    await init();
+    await getUserInfo();
+    await Future.delayed(const Duration(seconds: 2), () {});
+    await getPledges();
+  }
+
+  Future init() async {
+    final getToken = await UserSecureStorage.getAccessToken();
+    final getId = await UserSecureStorage.getUserId();
+    setState(() {
+      userId = getId;
+      accessToken = getToken;
+    });
+  }
+
+  Future getUserInfo() async {
+    final rawData = await get(Uri.parse(
+        "https://charity-project-hrmjjb.herokuapp.com/api/donors/${userId}"));
+    final data = jsonDecode(rawData.body);
+    print(data);
+    setState(() {
+      userData["username"] = data["donor"]["username"];
+      userData["address"] = data["donor"]["address"];
+      userData["email"] = data["donor"]["email_address"];
+    });
+  }
+
+  Future getPledges() async {
+    final rawData = await get(Uri.parse(
+        "https://charity-project-hrmjjb.herokuapp.com/api/${userId}/donations"));
+    final data = jsonDecode(rawData.body);
+    print(data);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    startUp();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,13 +81,14 @@ class _UserProfileState extends State<UserProfile> {
                 children: [
                   CircleAvatar(
                     radius: 80,
-                    backgroundImage: NetworkImage(userData['image']),
+                    backgroundImage: NetworkImage(
+                        "https://gravatar.com/avatar/67fbbf18af4bdbbbc55f1900b9698cce?s=200&d=robohash&r=x"),
                   ),
                   SizedBox(
                     height: 15,
                   ),
                   Text(
-                    userData['name'],
+                    userData['username'],
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
                   SizedBox(
