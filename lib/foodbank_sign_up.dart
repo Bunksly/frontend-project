@@ -238,8 +238,7 @@ class _FoodBankSignUpState extends State<FoodBankSignUp> {
                                       } else
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBarSucess);
-                                      Navigator.pushNamed(
-                                          context, '/food-bank');
+                                      Navigator.pushNamed(context, '/login');
                                     } catch (error) {
                                       print(error);
                                     }
