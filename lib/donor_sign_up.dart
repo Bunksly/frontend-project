@@ -64,7 +64,7 @@ class _DonorSignUpState extends State<DonorSignUp> {
                                 labelText: "Name",
                                 border: OutlineInputBorder()),
                             validator: (String? value) {
-                              const pattern = r'(^[a-zA-Z]+$)';
+                              const pattern = r'(^[a-zA-Z\s]*$)';
                               final regexp = RegExp(pattern);
                               if (value == null || value.length == 0) {
                                 return "Enter name";
