@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/request_page.dart';
 import 'package:frontend/secure-storage.dart';
+import 'package:frontend/manage_pledged_items.dart';
 
 class FoodBankPage extends StatefulWidget {
   const FoodBankPage({Key? key}) : super(key: key);
@@ -89,15 +90,29 @@ class _FoodBankPageState extends State<FoodBankPage> {
                   ListTile(
                       leading: Icon(Icons.web_rounded),
                       title: Text(charity["charity_website"])),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RequestPage(
-                                    list: needList, statefn: setParentState)));
-                      },
-                      child: Text("Request Items")),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RequestPage(
+                                        list: needList,
+                                        statefn: setParentState)));
+                          },
+                          child: Text("Request Items")),
+                      ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ManagePledges()));
+                          },
+                          child: Text("Items pledged"))
+                    ],
+                  ),
                 ]),
               ),
               Row(
