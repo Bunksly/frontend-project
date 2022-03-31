@@ -29,40 +29,6 @@ class _ManagePledgesState extends State<ManagePledges> {
     print(rawData.statusCode);
   }
 
-  void patchRequirements(pledge) async {
-    print(pledge);
-    // num amount = pledge["quantity_available"];
-    // final rawData = await get(Uri.parse(
-    //     "https://charity-project-hrmjjb.herokuapp.com/api/${widget.userId}/requirements"));
-    // final data = jsonDecode(rawData.body);
-    // final output = data["charityRequirements"] as List;
-    // final mappedOutput =
-    //     output.where((e) => e["item_id"] == pledge["item_id"]).toList();
-    // print(mappedOutput);
-    // if (mappedOutput.length > 1) {
-    //   final urgentReq =
-    //       mappedOutput.where((e) => e["urgent"] == true).toList()[0];
-    //   if (urgentReq["quantity_required"] < amount) {
-    //     amount -= urgentReq["quantity_required"];
-    //     final deleteData = await delete(Uri.parse(
-    //         "https://charity-project-hrmjjb.herokuapp.com/api/requirements/${urgentReq["request_id"]}"));
-    //     print(deleteData.statusCode);
-    //     final encodedReq = jsonEncode({
-    //       "request_id": mappedOutput[1]["request_id"],
-    //       "quantity_required": "-"
-    //     });
-    //     final rawData2 = await patch(
-    //         Uri.parse(
-    //             "https://charity-project-hrmjjb.herokuapp.com/api/${widget.userId}/requirements"),
-    //         headers: {
-    //           'Content-Type': 'application/json; charset=UTF-8',
-    //         },
-    //         body: encodedReq);
-    //     final data2 = jsonDecode(rawData2.body);
-    //   }
-    // }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -121,8 +87,7 @@ class _ManagePledgesState extends State<ManagePledges> {
                               onPressed: () {
                                 setState(() {
                                   pledgesList.remove(pledge);
-                                  // deletePledges(pledge);
-                                  patchRequirements(pledge);
+                                  deletePledges(pledge);
                                 });
                               },
                             )),

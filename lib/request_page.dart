@@ -85,6 +85,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   void patchRequirement(patchBody) async {
+    print(patchBody);
     final encodedReq = jsonEncode(patchBody);
     final rawData = await patch(
         Uri.parse(
@@ -192,7 +193,7 @@ class _MainPageState extends State<MainPage> {
                               backgroundColor: Colors.red,
                               onPressed: () {
                                 print(widget.list[i]["request_id"]);
-                                // deleteRequirement(widget.list[i]["request_id"]);
+                                deleteRequirement(widget.list[i]["request_id"]);
                                 setState(() {
                                   widget.list.removeWhere((e) =>
                                       e["item_name"] ==
@@ -211,7 +212,7 @@ class _MainPageState extends State<MainPage> {
       items: categoryList,
       selectedItem: dropdownValue,
       label: "Select Category",
-      showSearchBox: false,
+      showSearchBox: true,
       popupItemDisabled: (String s) => s.startsWith('I'),
       validator: (value) {
         if (value == null) return "Select Category";
@@ -311,7 +312,8 @@ class _MainPageState extends State<MainPage> {
               Map requestBody = {
                 "category_name": categoryName,
                 "item_id": itemId,
-                "quantity_required": quantityRequired
+                "quantity_required": quantityRequired,
+                "urgent": isUrgent
               };
 
               void duplicateAdder() {
