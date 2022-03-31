@@ -5,6 +5,7 @@ import 'package:frontend/pledged_items.dart';
 import 'package:frontend/secure-storage.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class UserProfile extends StatefulWidget {
   const UserProfile({Key? key}) : super(key: key);
@@ -68,7 +69,6 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     startUp();
   }
@@ -89,10 +89,11 @@ class _UserProfileState extends State<UserProfile> {
               Expanded(
                   child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 80,
-                    backgroundImage: NetworkImage(
-                        "https://gravatar.com/avatar/67fbbf18af4bdbbbc55f1900b9698cce?s=200&d=robohash&r=x"),
+                  CachedNetworkImage(
+                    imageUrl: "https://api.multiavatar.com/${userId}.png",
+                    height: 100,
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                   SizedBox(
                     height: 15,
