@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/loading.dart';
 import 'package:frontend/secure-storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
@@ -32,7 +33,6 @@ class _DonorState extends State<Donor> {
   late int range;
   List foodBankList = [];
   late String url;
-  bool isSearching = true;
 
   Future startUp() async {
     await init();
@@ -71,7 +71,6 @@ class _DonorState extends State<Donor> {
       }
       setState(() {
         foodBankList = output;
-        isSearching = false;
       });
     } catch (err) {
       print(err);
@@ -138,6 +137,11 @@ class _DonorState extends State<Donor> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              }),
           title: Text("Local Foodbanks"),
           actions: [
             IconButton(

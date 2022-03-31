@@ -14,7 +14,9 @@ class _PledgedItemsState extends State<PledgedItems> {
   Widget build(BuildContext context) {
     print(widget.data);
     return Scaffold(
-        appBar: AppBar(title: Text("Pledged Items")),
+        appBar: AppBar(
+          title: Text("Pledged Items"),
+        ),
         body: Center(
             child: ListView.builder(
                 itemCount: widget.data.length,
@@ -22,7 +24,8 @@ class _PledgedItemsState extends State<PledgedItems> {
                   final pledge = widget.data[i];
                   return Card(
                       child: ListTile(
-                    leading: Text(pledge["charity_name"]),
+                    leading: Text(
+                        pledge["charity_name"].replaceAll(RegExp(r'\s'), '\n')),
                     title: Center(child: Text(pledge["item_name"].toString())),
                     subtitle: Center(
                         child: Text("amount pledged: " +
