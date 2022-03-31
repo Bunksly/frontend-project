@@ -61,7 +61,7 @@ class _NewLoginState extends State<NewLogin> {
                         Expanded(
                             flex: 4,
                             child: Image.network(
-                                "https://i.postimg.cc/fk4bfLnv/logo5.png")),
+                                "https://i.postimg.cc/654ssXFC/logo7.png")),
                         Expanded(child: SizedBox()),
                         Expanded(
                           flex: 4,
