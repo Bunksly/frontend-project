@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/request_page.dart';
 import 'package:frontend/secure-storage.dart';
@@ -95,9 +95,11 @@ class _FoodBankPageState extends State<FoodBankPage> {
               Expanded(
                 flex: 6,
                 child: Column(children: [
-                  Image.network(
-                    "https://gravatar.com/avatar/67fbbf18af4bdbbbc55f1900b9698cce?s=200&d=robohash&r=x",
+                  CachedNetworkImage(
+                    imageUrl: "https://api.multiavatar.com/${userId}.png",
                     height: 100,
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                   ListTile(
                       leading: Icon(Icons.account_circle),

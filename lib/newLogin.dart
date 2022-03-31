@@ -50,7 +50,7 @@ class _NewLoginState extends State<NewLogin> {
                       blurRadius: 7,
                       offset: Offset(0, 3))
                 ]),
-            height: 350,
+            height: 420,
             width: 300,
             child: Form(
                 key: formKey,
@@ -58,6 +58,10 @@ class _NewLoginState extends State<NewLogin> {
                     padding: EdgeInsets.all(15),
                     child: Column(
                       children: [
+                        Expanded(
+                            flex: 4,
+                            child: Image.network(
+                                "https://i.postimg.cc/fk4bfLnv/logo5.png")),
                         Expanded(child: SizedBox()),
                         Expanded(
                           flex: 4,
