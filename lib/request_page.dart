@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'dart:convert';
+import 'package:http/http.dart';
 
 class RequestPage extends StatelessWidget {
   static final String title = "Item Request Page";
-  final List<Map> list;
+  final List list;
   final Function statefn;
-  const RequestPage({Key? key, required this.list, required this.statefn})
+  final String? userId;
+  const RequestPage(
+      {Key? key,
+      required this.list,
+      required this.statefn,
+      required this.userId})
       : super(key: key);
 
   @override
@@ -18,15 +25,24 @@ class RequestPage extends StatelessWidget {
         ),
         title: Text(title),
       ),
-      body: MainPage(list: list, statefn: statefn),
+      body: MainPage(
+        list: list,
+        statefn: statefn,
+        userId: userId,
+      ),
     );
   }
 }
 
 class MainPage extends StatefulWidget {
-  final List<Map> list;
+  final List list;
   final Function statefn;
-  const MainPage({Key? key, required this.list, required this.statefn});
+  final String? userId;
+  const MainPage(
+      {Key? key,
+      required this.list,
+      required this.statefn,
+      required this.userId});
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -35,20 +51,51 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final formKey = GlobalKey<FormState>();
 
-  String dropdownValue = 'food';
+  String? dropdownValue = null;
 
-  final categoryList = ["food", "clothes", "toiletries"];
+  List<String>? categoryList = [];
 
-  final Map itemMap = {
-    "food": ["pasta", "bread", "bananas"],
-    "clothes": ["trousers", "shirts", "shoes"],
-    "toiletries": ["soap", "toothpaste", "toilet paper"]
-  };
+  List categoryInfo = [];
+
+  List<String>? itemList = [];
+
+  List itemInfo = [];
 
   String? itemName = null;
   int? quantityRequired = 0;
   String? categoryName = '';
   bool? isUrgent = false;
+  late int? itemId;
+
+  void deleteRequirement(id) async {
+    final rawData = await delete(Uri.parse(
+        "https://charity-project-hrmjjb.herokuapp.com/api/requirements/${id}"));
+    print(rawData.statusCode);
+  }
+
+  void postRequirement(requestBody) async {
+    final encodedReq = jsonEncode(requestBody);
+    final rawData = await post(
+        Uri.parse(
+            "https://charity-project-hrmjjb.herokuapp.com/api/${widget.userId}/requirements"),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: encodedReq);
+  }
+
+  void patchRequirement(patchBody) async {
+    print(patchBody);
+    final encodedReq = jsonEncode(patchBody);
+    final rawData = await patch(
+        Uri.parse(
+            "https://charity-project-hrmjjb.herokuapp.com/api/${widget.userId}/requirements"),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: encodedReq);
+    print(rawData.body);
+  }
 
   Icon urgentIcon(input) {
     if (input) {
@@ -58,10 +105,26 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+  void getCategories() async {
+    final rawData = await get(Uri.parse(
+        "https://charity-project-hrmjjb.herokuapp.com/api/categories"));
+    final data = jsonDecode(rawData.body);
+    final output = data["categories"] as List;
+    final mappedOutput = output.map(
+      (e) {
+        return e["category_name"];
+      },
+    ).toList();
+    setState(() {
+      categoryInfo = output;
+      categoryList = mappedOutput.cast<String>();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    categoryName = "food";
+    getCategories();
   }
 
   @override
@@ -69,52 +132,59 @@ class _MainPageState extends State<MainPage> {
       padding: EdgeInsets.all(15),
       child: Column(children: [
         Expanded(
-            flex: 3,
+            flex: 4,
             child: Form(
               key: formKey,
               //autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 children: [
-                  buildCategory(),
-                  const SizedBox(height: 16),
-                  buildItemName(),
-                  const SizedBox(height: 16),
-                  buildQuantityRequired(),
-                  const SizedBox(height: 16),
-                  buildIsUrgent(),
-                  const SizedBox(height: 16),
+                  Expanded(
+                    child: buildCategory(),
+                  ),
+                  Expanded(
+                    child: buildItemName(),
+                  ),
+                  Expanded(
+                    child: buildQuantityRequired(),
+                  ),
+                  Expanded(
+                    child: buildIsUrgent(),
+                  ),
                   buildSubmit(),
                 ],
               ),
             )),
-        Row(
-          children: const [
-            Expanded(
-                flex: 3,
-                child: Text("Urgent?",
-                    style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(
-                flex: 12,
-                child: Text("Item Name(Amount needed)",
-                    style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(
-                flex: 3,
-                child: Text("Delete",
-                    style: TextStyle(fontWeight: FontWeight.bold)))
-          ],
+        Expanded(
+          flex: 1,
+          child: Row(
+            children: const [
+              Expanded(
+                  flex: 3,
+                  child: Text("Urgent?",
+                      style: TextStyle(fontWeight: FontWeight.bold))),
+              Expanded(
+                  flex: 12,
+                  child: Text("Item Name(Amount needed)",
+                      style: TextStyle(fontWeight: FontWeight.bold))),
+              Expanded(
+                  flex: 3,
+                  child: Text("Delete",
+                      style: TextStyle(fontWeight: FontWeight.bold)))
+            ],
+          ),
         ),
         Expanded(
-          flex: 2,
+          flex: 3,
           child: ListView.builder(
               itemCount: widget.list.length,
               itemBuilder: (context, i) {
                 return Card(
                     child: ListTile(
-                        leading: urgentIcon(widget.list[i]["isUrgent"]),
-                        title: Text(widget.list[i]["itemName"] +
-                            "(${widget.list[i]["quantityRequired"].toString()})"),
-                        subtitle:
-                            Text("Category: " + widget.list[i]["categoryName"]),
+                        leading: urgentIcon(widget.list[i]["urgent"]),
+                        title: Text(widget.list[i]["item_name"] +
+                            "(${widget.list[i]["quantity_required"].toString()})"),
+                        subtitle: Text(
+                            "Category: " + widget.list[i]["category_name"]),
                         trailing: SizedBox(
                           height: 25,
                           child: FloatingActionButton.small(
@@ -122,12 +192,13 @@ class _MainPageState extends State<MainPage> {
                               child: const Icon(Icons.clear),
                               backgroundColor: Colors.red,
                               onPressed: () {
+                                print(widget.list[i]["request_id"]);
+                                deleteRequirement(widget.list[i]["request_id"]);
                                 setState(() {
                                   widget.list.removeWhere((e) =>
-                                      e["itemName"] ==
-                                          widget.list[i]["itemName"] &&
-                                      e["isUrgent"] ==
-                                          widget.list[i]["isUrgent"]);
+                                      e["item_name"] ==
+                                          widget.list[i]["item_name"] &&
+                                      e["urgent"] == widget.list[i]["urgent"]);
                                   widget.statefn(widget.list);
                                 });
                               }),
@@ -141,14 +212,25 @@ class _MainPageState extends State<MainPage> {
       items: categoryList,
       selectedItem: dropdownValue,
       label: "Select Category",
-      showSearchBox: false,
+      showSearchBox: true,
       popupItemDisabled: (String s) => s.startsWith('I'),
       validator: (value) {
         if (value == null) return "Select Category";
         return null;
       },
-      onChanged: (String? newValue) {
+      onChanged: (String? newValue) async {
+        final info = categoryInfo
+            .where((e) => e["category_name"] == newValue)
+            .toList()[0];
+        final rawData = await get(Uri.parse(
+            "https://charity-project-hrmjjb.herokuapp.com/api/items/${info["category_id"]}"));
+        final data = jsonDecode(rawData.body);
+        final output = data["items"] as List;
+        final mappedOutput =
+            output.map((e) => e["item_name"].toString()).toList();
         setState(() {
+          itemInfo = output;
+          itemList = mappedOutput;
           dropdownValue = newValue!;
           categoryName = newValue;
           itemName = null;
@@ -157,7 +239,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget buildItemName() => DropdownSearch<String>(
       mode: Mode.MENU,
-      items: itemMap[categoryName],
+      items: itemList,
       selectedItem: itemName,
       label: "Select Item",
       showSearchBox: true,
@@ -167,8 +249,12 @@ class _MainPageState extends State<MainPage> {
         return null;
       },
       onChanged: (String? newValue) {
+        final info =
+            itemInfo.where((e) => e["item_name"] == newValue).toList()[0];
+
         setState(() {
           itemName = newValue;
+          itemId = info["item_id"];
         });
       });
 
@@ -216,26 +302,41 @@ class _MainPageState extends State<MainPage> {
               formKey.currentState!.save();
 
               Map output = {
-                "itemName": itemName,
-                "quantityRequired": quantityRequired,
-                "categoryName": categoryName,
-                "isUrgent": isUrgent
+                "item_name": itemName,
+                "quantity_required": quantityRequired,
+                "category_name": categoryName,
+                "urgent": isUrgent,
+                "item_id": itemId
+              };
+
+              Map requestBody = {
+                "category_name": categoryName,
+                "item_id": itemId,
+                "quantity_required": quantityRequired,
+                "urgent": isUrgent
               };
 
               void duplicateAdder() {
                 bool didAdd = false;
                 for (final x in widget.list) {
-                  String outputItemName = output["itemName"];
-                  String xItemName = x["itemName"];
+                  String outputItemName = output["item_name"];
+                  String xItemName = x["item_name"];
                   if (xItemName == outputItemName &&
-                      x["isUrgent"] == output["isUrgent"]) {
-                    x["quantityRequired"] += output["quantityRequired"];
+                      x["urgent"] == output["urgent"]) {
+                    x["quantity_required"] += output["quantity_required"];
                     didAdd = true;
+                    Map patchBody = {
+                      "request_id": x["request_id"],
+                      "quantity_required": quantityRequired
+                    };
+                    patchRequirement(patchBody);
                     break;
                   }
                 }
                 if (didAdd == false) {
                   widget.list.add(output);
+
+                  postRequirement(requestBody);
                 }
               }
 
