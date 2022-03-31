@@ -60,13 +60,21 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
     setState(() {
       for (final x in needsList) {
         for (final y in donationsList) {
+          print(x);
+          print(y);
           if (y["charity_id"] == x["charity_id"] &&
-              y["item_id"] == x["item_id"]) {
+              y["item_id"] == x["item_id"] &&
+              y["urgent"] == x["urgent"]) {
             x["quantity_required"] -= y["quantity_available"];
           }
         }
       }
     });
+  }
+
+  String isUrgent(need) {
+    if (need["urgent"]) return "Urgent!";
+    return "";
   }
 
   @override
@@ -128,16 +136,18 @@ class _DetailedFoodBankState extends State<DetailedFoodBank> {
                       child: Text(need["item_name"]),
                     ),
                     subtitle: Center(
-                      child: Text(
-                          "amount " + need["quantity_required"].toString()),
+                      child: Text("amount " +
+                          need["quantity_required"].toString() +
+                          " " +
+                          isUrgent(need)),
                     ),
                     trailing: ElevatedButton(
                         onPressed: () {
                           if (need["quantity_required"] == 0) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                backgroundColor: Colors.amber,
+                                backgroundColor: Color(0xff457B9D),
                                 content: Text("Maximum amount already pledged",
-                                    style: TextStyle(color: Colors.black))));
+                                    style: TextStyle(color: Colors.white))));
                           } else {
                             Navigator.push(
                                 context,

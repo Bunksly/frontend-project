@@ -72,7 +72,8 @@ class PledgeForm extends StatelessWidget {
                                       "category_name": need["category_name"],
                                       "item_id": need["item_id"],
                                       "quantity_available": amount,
-                                      "charity_id": data["charity_id"]
+                                      "charity_id": data["charity_id"],
+                                      "urgent": need["urgent"]
                                     });
                                     print(data);
                                     final rawData = await post(
@@ -87,7 +88,7 @@ class PledgeForm extends StatelessWidget {
                                     print(response);
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                            backgroundColor: Colors.green,
+                                            backgroundColor: Color(0xff749C75),
                                             content: Text(
                                                 "${amount} ${need["item_name"]} pledged succsefully")));
                                     Navigator.pop(context);

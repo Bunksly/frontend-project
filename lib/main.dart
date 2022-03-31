@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/home.dart';
 import 'package:frontend/donor.dart';
 import 'package:frontend/profile_page.dart';
 import 'package:frontend/user-profile.dart';
@@ -55,7 +54,6 @@ class MyApp extends StatelessWidget {
               .copyWith(buttonColor: buttonColourCustom)),
       initialRoute: '/login',
       routes: {
-        '/': (context) => Home(),
         '/donor': (context) => Donor(),
         '/food-bank': (context) => FoodBankPage(),
         '/profile': (context) => UserProfile(),

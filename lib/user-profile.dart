@@ -78,6 +78,9 @@ class _UserProfileState extends State<UserProfile> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Profile'),
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: (() => Navigator.pushNamed(context, '/donor'))),
         ),
         body: Padding(
           padding: EdgeInsets.all(15),
