@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/karma.dart';
+import 'package:frontend/loading.dart';
 import 'package:frontend/personal_information.dart';
 import 'package:frontend/pledged_items.dart';
 import 'package:frontend/secure-storage.dart';
@@ -18,6 +19,7 @@ class _UserProfileState extends State<UserProfile> {
   late String? userId;
   late String? accessToken;
   late List pledges;
+  bool isLoading = true;
 
   late Map userData = {
     "username": "",
@@ -28,8 +30,11 @@ class _UserProfileState extends State<UserProfile> {
   Future startUp() async {
     await init();
     await getUserInfo();
-    await Future.delayed(const Duration(seconds: 2), () {});
+    await Future.delayed(const Duration(seconds: 1), () {});
     await getPledges();
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future init() async {
@@ -75,79 +80,83 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Profile'),
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: (() => Navigator.pushNamed(context, '/donor'))),
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(15),
-          child: Center(
-            child: Column(children: [
-              Expanded(
-                  child: Column(
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: "https://api.multiavatar.com/${userId}.png",
-                    height: 100,
-                    placeholder: (context, url) => CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    userData['username'],
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(userData['address']),
-                ],
-              )),
-              Expanded(
-                  child: Column(
-                children: [
-                  Card(
-                      child: ListTile(
-                          leading: Icon(Icons.person),
-                          title: Text('Personal Information'),
-                          onTap: () => {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PersonalInfo(data: userData)),
-                                )
-                              })),
-                  Card(
-                      child: ListTile(
-                          leading: Icon(Icons.check_circle_outline),
-                          title: Text('Pledged Items'),
-                          onTap: () => {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          PledgedItems(data: pledges)),
-                                )
-                              })),
-                  Card(
-                      child: ListTile(
-                          leading: Icon(Icons.favorite_border),
-                          title: Text('Karma'),
-                          onTap: () => {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          Karma(data: userData)),
-                                )
-                              })),
-                ],
-              ))
-            ]),
-          ),
-        ));
+    return isLoading
+        ? Loading()
+        : Scaffold(
+            appBar: AppBar(
+              title: const Text('Profile'),
+              leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: (() => Navigator.pushNamed(context, '/donor'))),
+            ),
+            body: Padding(
+              padding: EdgeInsets.all(15),
+              child: Center(
+                child: Column(children: [
+                  Expanded(
+                      child: Column(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: "https://api.multiavatar.com/${userId}.png",
+                        height: 100,
+                        placeholder: (context, url) =>
+                            CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Text(
+                        userData['username'],
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(userData['address']),
+                    ],
+                  )),
+                  Expanded(
+                      child: Column(
+                    children: [
+                      Card(
+                          child: ListTile(
+                              leading: Icon(Icons.person),
+                              title: Text('Personal Information'),
+                              onTap: () => {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              PersonalInfo(data: userData)),
+                                    )
+                                  })),
+                      Card(
+                          child: ListTile(
+                              leading: Icon(Icons.check_circle_outline),
+                              title: Text('Pledged Items'),
+                              onTap: () => {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              PledgedItems(data: pledges)),
+                                    )
+                                  })),
+                      Card(
+                          child: ListTile(
+                              leading: Icon(Icons.favorite_border),
+                              title: Text('Karma'),
+                              onTap: () => {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              Karma(data: userData)),
+                                    )
+                                  })),
+                    ],
+                  ))
+                ]),
+              ),
+            ));
   }
 }

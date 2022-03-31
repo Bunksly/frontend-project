@@ -33,11 +33,15 @@ class _DonorState extends State<Donor> {
   late int range;
   List foodBankList = [];
   late String url;
+  bool isLoading = true;
 
   Future startUp() async {
     await init();
     await getUserInfo();
-    await Future.delayed(const Duration(seconds: 2), () {});
+    setState(() {
+      isLoading = false;
+    });
+    await Future.delayed(const Duration(seconds: 1), () {});
     _googleMapController
         .animateCamera(CameraUpdate.newLatLng(LatLng(userlat, userlng)));
     fetchFoodBanks();
@@ -135,91 +139,96 @@ class _DonorState extends State<Donor> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushNamed(context, '/login');
-              }),
-          title: Text("Local Foodbanks"),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/profile');
-                },
-                icon: Icon(Icons.account_box))
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-                child: GoogleMap(
-              initialCameraPosition: Donor._kInitialPosition,
-              mapType: MapType.normal,
-              markers: _markers.values.toSet(),
-              myLocationEnabled: false,
-              onMapCreated: (controller) {
-                _googleMapController = controller;
-              },
-            )),
-            Padding(
-                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                child: Row(children: [
-                  Expanded(
-                      child: DropdownSearch<int>(
-                          mode: Mode.MENU,
-                          items: [500, 1000, 2500, 5000],
-                          selectedItem: dropdownValue,
-                          label: "Search range(m)",
-                          showSearchBox: false,
-                          validator: (value) {
-                            if (value == null) return "Select Range";
-                            return null;
-                          },
-                          onChanged: (int? newValue) {
-                            setState(() {
-                              dropdownValue = newValue!;
-                              range = newValue;
-                              url =
-                                  "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
-                              fetchFoodBanks();
-                            });
-                          })),
-                  Expanded(
-                      child: TextFormField(
-                    onFieldSubmitted: (String value) {
-                      getLatLng(value);
+    return isLoading
+        ? Loading()
+        : Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/login');
+                  }),
+              title: Text("Local Foodbanks"),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/profile');
                     },
-                    decoration: InputDecoration(
-                        labelText: "Search by address",
-                        border: OutlineInputBorder()),
-                  )),
-                ])),
-            Expanded(
-                child: Padding(
-                    padding: EdgeInsets.all(15),
-                    child: ListView.builder(
-                      itemCount: foodBankList.length,
-                      itemBuilder: (context, i) {
-                        final foodBank = foodBankList[i];
-                        return Card(
-                            child: ListTile(
-                          onTap: (() => {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) => DetailedFoodBank(
-                                          data: foodBank, userId: userId)),
-                                )
-                              }),
-                          leading: Icon(Icons.food_bank),
-                          title: Text(foodBank["charity_name"]),
-                          trailing: Text(foodBank["distance"].toString() + "m"),
-                          subtitle: Text(foodBank["address"]),
-                        ));
-                      },
-                    )))
-          ],
-        ));
+                    icon: Icon(Icons.account_box))
+              ],
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                    child: GoogleMap(
+                  initialCameraPosition: Donor._kInitialPosition,
+                  mapType: MapType.normal,
+                  markers: _markers.values.toSet(),
+                  myLocationEnabled: false,
+                  onMapCreated: (controller) {
+                    _googleMapController = controller;
+                  },
+                )),
+                Padding(
+                    padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                    child: Row(children: [
+                      Expanded(
+                          child: DropdownSearch<int>(
+                              mode: Mode.MENU,
+                              items: [500, 1000, 2500, 5000],
+                              selectedItem: dropdownValue,
+                              label: "Search range(m)",
+                              showSearchBox: false,
+                              validator: (value) {
+                                if (value == null) return "Select Range";
+                                return null;
+                              },
+                              onChanged: (int? newValue) {
+                                setState(() {
+                                  dropdownValue = newValue!;
+                                  range = newValue;
+                                  url =
+                                      "https://charity-project-hrmjjb.herokuapp.com/api/charities?lat=${userlat}&lng=${userlng}&range=${range}";
+                                  fetchFoodBanks();
+                                });
+                              })),
+                      Expanded(
+                          child: TextFormField(
+                        onFieldSubmitted: (String value) {
+                          getLatLng(value);
+                        },
+                        decoration: InputDecoration(
+                            labelText: "Search by address",
+                            border: OutlineInputBorder()),
+                      )),
+                    ])),
+                Expanded(
+                    child: Padding(
+                        padding: EdgeInsets.all(15),
+                        child: ListView.builder(
+                          itemCount: foodBankList.length,
+                          itemBuilder: (context, i) {
+                            final foodBank = foodBankList[i];
+                            return Card(
+                                child: ListTile(
+                              onTap: (() => {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              DetailedFoodBank(
+                                                  data: foodBank,
+                                                  userId: userId)),
+                                    )
+                                  }),
+                              leading: Icon(Icons.food_bank),
+                              title: Text(foodBank["charity_name"]),
+                              trailing:
+                                  Text(foodBank["distance"].toString() + "m"),
+                              subtitle: Text(foodBank["address"]),
+                            ));
+                          },
+                        )))
+              ],
+            ));
   }
 }
