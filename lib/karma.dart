@@ -6,7 +6,6 @@ class Karma extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: Text("Karma")), body: Text(data["karma"]));
+    return Scaffold(appBar: AppBar(title: Text("Karma")), body: Text("WIP"));
   }
 }
